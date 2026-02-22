@@ -1,88 +1,39 @@
 "use client"
-
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Menu, X, Zap,
-} from "lucide-react";
-import {
-  Sheet,
-  SheetContent,
-  SheetTrigger,
-} from "@/components/ui/sheet"
-import Link from "next/link";
+import Link from 'next/link'
+import Logo from '../myComponents/Logo'
 
 const Header = () => {
 
-
-  const [open, isOpen] = useState(false)
-
-
- const navItems = [
-  { name: 'How it works', href: "howitworks"},
-  { name: 'Pricing', href: 'pricing'},
-  { name: 'Testimoniale', href: 'testimonials'}
- ]
-
-
+  const navItems = [
+    { name: 'Dashboard' },
+    { name: 'Features' },
+    { name: 'Pricing' },
+  ]
 
   return (
-    <header className='w-full fixed z-50 transition-all duration-300 ' >
-      <div className="container mx-auto p-6 flex items-center justify-around">
-        {/* Logo */}
-                <div className='flex items-center gap-2 cursor-pointer select-none'>
-    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-violet-500/20">
-      <Zap className="w-5 h-5 text-white fill-white" />
-    </div>
-    <span className="font-bold text-xl tracking-tight text-white">
-      Thread<span className="text-violet-400">Tube</span>
-    </span>
-  </div>
+    <header className="text-slate-200 z-50 fixed w-full backdrop-blur-md border-b border-white/5">
+      <div className="max-w-7xl mx-auto px-6 py-4">
+        <div className="flex justify-between items-center">
+          <Logo />
 
-   {/* Logo */}
-           
+          <nav className="hidden md:block">
+            <ul className="flex items-center gap-8">
+              {navItems.map((item) => (
+                <li key={item.name} className="text-sm cursor-pointer font-medium text-slate-300 hover:text-orange-400 transition-colors">
+                  {item.name}
+                </li>
+              ))}
+            </ul>
+          </nav>
 
-           {/* Desktop Nav */}
-        <nav className="hidden lg:flex items-center gap-8">
-           { navItems.map((navItem) =>(
-            <button className="text-slate-300 hover:text-slate-200 cursor-pointer" key={navItem.name}>
-              {navItem.name}
-            </button>
-           ) )}
-        </nav>
+          <div className="flex items-center gap-4">
+            <Link href='/login'>
+              <button className="bg-gradient-to-r cursor-pointer from-orange-500 to-red-600 text-white font-semibold py-2 px-6 rounded-full text-sm hover:shadow-[0_0_20px_rgba(249,115,22,0.4)] transition-all transform hover:scale-105 active:scale-95">Login</button>
+            </Link>
 
-        <div className="hidden lg:flex items-center gap-4">
-          <Link href='/login'>
-          <Button className="text-sm font-medium text-slate-200 cursor-pointer hover:text-white px-4 py-2">
-            Sign in
-          </Button>
-          </Link>
-          <Link href='/register'>
-          <Button variant='outline' className="h-9 px-5 text-sm cursor-pointer font-medium hover:bg-slate-200">
-            Get Started
-          </Button>
-          </Link>
+          </div>
         </div>
-                   {/* Desktop Nav */}
-
-
-                          {/* Mobile Nav */}
-    <Sheet open={open} onOpenChange={isOpen}>
-  <SheetTrigger className="lg:hidden  text-white">
-    { open ? <X/> : <Menu/> }
-  </SheetTrigger>
-  <SheetContent className="bg-slate-800 w-full" side="left">
-   <nav className="lg:hidden flex flex-col items-center gap-6 my-10 ">
-           { navItems.map((navItem) =>(
-            <button className="text-slate-300 hover:text-slate-200 cursor-pointer" key={navItem.name}>
-              {navItem.name}
-            </button>
-           ) )}
-        </nav>
-  </SheetContent>
-</Sheet>
       </div>
-      
-     {/* Mobile Nav */}
     </header>
   )
 }

@@ -1,51 +1,53 @@
 "use client"
 
-import { 
-  Sparkles, 
-  ArrowRight, 
-  Link as LinkIcon, 
-  CheckCircle2, 
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 const Hero = () => {
   return (
-    <div className="container mx-auto px-6 pt-32 pb-24 relative flex flex-col items-center text-center bg-violet-500/10 border border-violet-500/20">
-    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-300 text-sm mb-8 animate-fade-in-up">
-      <Sparkles className="w-4 h-4" />
-      <span className="font-medium text-slate-200">Powered by GPT-4o & Claude 3.5</span>
-    </div>
-
-    <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-8 leading-[1.1] max-w-5xl bg-clip-text text-transparent bg-gradient-to-b from-white via-white to-slate-400">
-      Turn any YouTube video into a <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-indigo-400">viral Thread </span>
-    </h1>
-
-    <p className="text-xl text-slate-400 mb-12 max-w-2xl leading-relaxed font-light">
-    Stop wasting hours writing. Our advanced AI extracts the essence and gold from your favorite videos in less than 30 seconds
-    </p>
-
-    <div className="w-full max-w-2xl relative group z-10">
-      <div className="absolute -inset-7 bg-gradient-to-r from-violet-600 to-indigo-600 rounded-2xl blur opacity-30 group-hover:opacity-60 transition duration-1000"></div>
-      <div className="relative flex items-center bg-slate-950/80 backdrop-blur-xl border border-white/10 rounded-2xl p-2 pr-3 shadow-2xl">
-        <div className="pl-4 pr-3 text-slate-500">
-          <LinkIcon className="w-5 h-5" />
-        </div>
-        <input
-          type="text"
-          placeholder="Paste YouTube Link (ex: https://youtu.be/...)"
-          className="flex-1 bg-transparent border-none focus:ring-0 focus:outline-none placeholder:text-slate-200 h-12 text-lg text-white w-full"
-        />
-        <Button className="h-12 px-8 rounded-xl cursor-pointer">
-          Generate
-          <ArrowRight className="w-4 h-4" />
-        </Button>
+    <section className="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden bg-slate-950">
+      {/* Background with Mars Aesthetic */}
+      <div className="absolute inset-0 z-0">
+        <div className="absolute inset-0 bg-[url('/hero.jpg')] bg-cover bg-center opacity-40 grayscale-[30%]"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/80 to-transparent"></div>
+        <div className="absolute bottom-0 left-0 w-full h-64 bg-gradient-to-t from-slate-950 to-transparent"></div>
       </div>
-      <p className="mt-4 text-sm text-slate-500 flex items-center justify-center gap-2">
-        <CheckCircle2 className="w-4 h-4 text-slate-200" />
-        No credit card required for first 3 videos
-      </p>
-    </div>
-  </div>
+
+      <div className="container px-6 md:px-12 relative z-10">
+        <div className="max-w-6xl flex flex-col items-center justify-center ">
+          <div className="inline-block px-4 py-1.5 mb-6 border border-orange-500/30 rounded-full bg-orange-500/10 backdrop-blur-md">
+            <span className="text-orange-400 text-[10px] font-bold uppercase tracking-[0.2em]">
+              The Next Frontier in Trading
+            </span>
+          </div>
+
+          <h1 className="text-6xl md:text-8xl font-extrabold text-white mb-6 leading-[1.1] tracking-tight">
+            Trade with
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-red-600 ml-2">
+              Precision
+            </span>
+          </h1>
+
+          <p className="text-lg md:text-xl text-slate-400 mb-10 max-w-2xl leading-relaxed">
+            Master your execution with a journal built for clarity. Track your trades, visualize your account statistics, and continuously improve your strategy through data-backed insights.
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-5">
+            <button className="px-10 py-4 bg-white text-slate-950 font-bold rounded-xl hover:bg-orange-500 hover:text-white transition-all duration-300 shadow-xl shadow-white/5">
+              Start Journaling
+            </button>
+            <button className="px-10 py-4 border border-white/10 bg-white/5 backdrop-blur-md text-white font-semibold rounded-xl hover:bg-white/10 transition-colors">
+              Explore Features
+            </button>
+          </div>
+
+          <div className="mt-16 flex items-center gap-8 opacity-50 grayscale">
+            {/* Simboluri piețe - Vizual doar */}
+            <span className="text-white font-bold tracking-tighter text-xl italic">INDICIES</span>
+            <span className="text-white font-bold tracking-tighter text-xl italic">FOREX</span>
+            <span className="text-white font-bold tracking-tighter text-xl italic">CRYPTO</span>
+          </div>
+        </div>
+      </div>
+    </section>
   )
 }
 

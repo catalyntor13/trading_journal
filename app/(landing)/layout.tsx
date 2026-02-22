@@ -1,9 +1,7 @@
 export default function LandingPage({ children,} : {children: React.ReactNode}) {
     return (
        
-
-
-        <main className="bg-slate-900">
+        <main className="font-jakarta">
             {children}
         </main>
 

@@ -1,9 +1,8 @@
 import AsideNav from "@/components/dashboard/aside-nav";
-import HeaderNav from "@/components/dashboard/header-nav";
 import { auth } from "@/lib/auth"; // Importăm auth de SERVER
-import { headers } from "next/headers"; // Necesar pentru a citi cookie-urile
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-
+import TopNav from "@/components/dashboard/top-nav";
 
 
 export default async function DashboardLayout({
@@ -14,7 +13,7 @@ export default async function DashboardLayout({
 
   // 1. Initiem sesiunea din auth Server
   const session = await auth.api.getSession({
-    headers: await headers() 
+    headers: await headers()
   });
 
   // 2. Dacă nu există sesiune, dăm KICK către homepage sau login
@@ -22,15 +21,16 @@ export default async function DashboardLayout({
     redirect("/login"); // sau redirect("/login")
   }
 
+
   return (
     <div className="flex h-screen ">
       {/* Sidebar fix în stânga */}
-       <AsideNav/>
-        
+      <AsideNav />
+
       {/* Zona principală de conținut */}
       <main className="flex-1 overflow-y-auto ">
 
-         <HeaderNav/>
+        <TopNav user={session.user} />
 
         {children}
       </main>

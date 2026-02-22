@@ -85,9 +85,79 @@ export const sessionRelations = relations(session, ({ one }) => ({
   }),
 }));
 
+
 export const accountRelations = relations(account, ({ one }) => ({
   user: one(user, {
     fields: [account.userId],
     references: [user.id],
   }),
 }));
+
+export const trading_accounts = pgTable("trading_accounts", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  balance: text("balance"),
+  type: text("type"), // live, demo, funded
+  broker: text("broker"),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at")
+    .defaultNow()
+    .$onUpdate(() => /* @__PURE__ */ new Date())
+    .notNull(),
+});
+
+export const trading_accountsRelations = relations(trading_accounts, ({ one, many }) => ({
+  user: one(user, {
+    fields: [trading_accounts.userId],
+    references: [user.id],
+  }),
+  trades: many(TradingAccountsData),
+}));
+
+export const TradingAccountsData = pgTable("trading_accounts_data", {
+  id: text("id").primaryKey(),
+  pair: text("pair"),
+  strategy: text("strategy"),
+  direction: text("direction"), // Buy/Sell
+  profit: text("profit"), // Gross Profit
+  commission: text("commission"),
+  riskPercent: text("risk_percent"),
+  tod: text("tod"),
+  riskRatio: text("risk_ratio"),
+  comments: text("comments"),
+  image1: text("image1"),
+  image2: text("image2"),
+  fearIndex: text("fear_index"), // Scale 1-10
+  accountId: text("account_id")
+    .notNull()
+    .references(() => trading_accounts.id, { onDelete: "cascade" }),
+  date: timestamp("date").defaultNow(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const trading_accountsDataRelations = relations(TradingAccountsData, ({ one }) => ({
+  account: one(trading_accounts, {
+    fields: [TradingAccountsData.accountId],
+    references: [trading_accounts.id],
+  }),
+}));
+
+export const strategies = pgTable("strategies", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(), // Title
+  description: text("description"),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+});
+
+export const strategiesRelations = relations(strategies, ({ one }) => ({
+  user: one(user, {
+    fields: [strategies.userId],
+    references: [user.id],
+  }),
+}));
+

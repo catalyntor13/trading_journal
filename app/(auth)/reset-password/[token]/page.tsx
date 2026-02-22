@@ -1,5 +1,3 @@
-// src/app/reset-password/[token]/page.tsx
-
 "use client";
 
 import { z } from "zod";
@@ -13,7 +11,7 @@ import { useParams } from "next/navigation";
 import { useState } from "react";
 
 const NewPasswordSchema = z.object({
-  newPassword: z.string().min(6, "Parola trebuie să aibă minim 6 caractere"),
+    newPassword: z.string().min(6, "Parola trebuie să aibă minim 6 caractere"),
 });
 
 type NewPasswordSchemaData = z.infer<typeof NewPasswordSchema>;
@@ -36,7 +34,7 @@ export default function ResetPasswordPage() {
             onRequest: () => {
                 toast.loading("Se resetează parola...");
             },
-                
+
             onSuccess: () => {
                 toast.success("Parola a fost resetată cu succes! Te poți autentifica.");
                 // Redirecționează către pagina de login
@@ -53,10 +51,10 @@ export default function ResetPasswordPage() {
         <div className="flex justify-center items-center h-screen">
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 p-8 bg-slate-900 rounded-lg shadow-xl w-96">
                 <h2 className="text-xl font-bold text-white">Setează o Parolă Nouă</h2>
-                <Input 
-                    placeholder="Parolă nouă" 
-                    type="password" 
-                    disabled={isLoading} 
+                <Input
+                    placeholder="Parolă nouă"
+                    type="password"
+                    disabled={isLoading}
                     {...form.register("newPassword")}
                 />
                 <Button type="submit" disabled={isLoading} className="w-full bg-violet-600 hover:bg-violet-700">
