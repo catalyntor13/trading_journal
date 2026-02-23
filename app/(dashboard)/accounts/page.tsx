@@ -26,6 +26,15 @@ export default async function AccountsPage({
 
             {/* PAGINATION LOGIC */}
             {(() => {
+                if (accounts.length === 0) {
+                    return (
+                        <div className="flex flex-col items-center justify-center py-12 px-4 bg-card rounded-2xl border border-border shadow-sm text-center">
+                            <h3 className="text-xl font-semibold mb-2 text-foreground">No Account yet</h3>
+                            <p className="text-muted-foreground">Please create an account to get started.</p>
+                        </div>
+                    )
+                }
+
                 const page = pageParam ? parseInt(pageParam as string) : 1
                 const pageSize = 6
                 const totalPages = Math.ceil(accounts.length / pageSize)

@@ -30,25 +30,36 @@ function LoginContent() {
 
   const searchParams = useSearchParams();
   const hasAccessError = searchParams.get('error'); // Citim parametrul error cel din login?error=unauthorized
+  const hasMessage = searchParams.get('message');
   const hasAnyQuery = searchParams.toString().length > 0 // Verifică dacă există ORICE parametru
 
   // Check for existing session
-  const { data: session } = useSession()
+  const { data: session, isPending } = useSession()
 
   useEffect(() => {
+
+    // 1. Dacă încă verifică sesiunea, NU face nimic. Oprește-te aici.
+    if (isPending) return;
+
+
+    // 2. Dacă e deja logat, trimite-l înapoi pe dashboard.
     if (session) {
       router.replace('/dashboard')
       return
     }
-
+    // 3. Gestionarea mesajelor din URL
     if (hasAccessError === 'unauthorized') {
-      toast.error('Access Denined. Please log in')
+      toast.error('Access Denied. Please log in')
       router.replace('/login');
-    } else if (hasAnyQuery && !hasAccessError) {
+    } else if (hasMessage === 'logged-out') {
+      toast.success('You have been logged out successfully');
+      router.replace('/login');
+    }
+    else if (hasAnyQuery && !hasAccessError && !hasMessage) {
       toast.error('An unknown parameter');
       router.replace('/login')
     }
-  }, [hasAccessError, router, session, hasAnyQuery]) // Rulează doar când parametrul se schimbă
+  }, [hasAccessError, hasMessage, hasAnyQuery, session, isPending, router]) // Rulează doar când parametrul se schimbă
 
   // 2. Inițializăm formularul
   const {
@@ -76,11 +87,21 @@ function LoginContent() {
         router.push("/dashboard");
       },
       onError: (ctx) => {
-        toast.error(ctx.error.message || "Email or password incorrect.");
+        // BetterAuth generally responds with standard error messages like "Invalid email or password"
+        // But if it replies with something generic like "Access Denied" or "Unauthorized",
+        // we override it to be strictly helpful to the user about their credentials.
+        toast.error("Invalid email or password. Please try again.");
         setIsLoading(false);
       }
     });
   };
+
+  const handleGoogleSignIn = async () => {
+    await authClient.signIn.social({
+      provider: "google",
+      callbackURL: "/dashboard",
+    });
+  }
 
   return (
     <AuthCard
@@ -90,7 +111,7 @@ function LoginContent() {
       footerActionHref="/register" // Aici setam linkul catre register
     >
       <div className="space-y-4">
-        <button className="w-full cursor-pointer h-11 bg-slate-900 border border-slate-800 hover:bg-slate-800 hover:border-slate-700 text-white rounded-xl flex items-center justify-center gap-3 transition-all font-medium text-sm">
+        <button onClick={handleGoogleSignIn} className="w-full cursor-pointer h-11 bg-slate-900 border border-slate-800 hover:bg-slate-800 hover:border-slate-700 text-white rounded-xl flex items-center justify-center gap-3 transition-all font-medium text-sm">
           <FaGoogle className="w-5 h-5" /> Continue with Google
         </button>
 

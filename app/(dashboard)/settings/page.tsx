@@ -1,6 +1,6 @@
 "use client"
 
-import { Key, Mail, User, CreditCard, ShieldAlert, Check } from "lucide-react"
+import { Key, User, CreditCard, ShieldAlert, Check, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
     Dialog,
@@ -10,8 +10,103 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
+import { useState, useEffect } from "react"
+import { authClient } from "@/lib/auth-client"
+import { toast } from "react-hot-toast"
+import { useRouter } from "next/navigation"
 
 export default function SettingsPage() {
+    const router = useRouter()
+    const { data: session, isPending } = authClient.useSession()
+
+    const [name, setName] = useState("")
+    const [currentPassword, setCurrentPassword] = useState("")
+    const [newPassword, setNewPassword] = useState("")
+
+    const [isUpdatingName, setIsUpdatingName] = useState(false)
+    const [isChangingPassword, setIsChangingPassword] = useState(false)
+    const [isDeletingAccount, setIsDeletingAccount] = useState(false)
+    const [isGoogleAuth, setIsGoogleAuth] = useState(false)
+
+    useEffect(() => {
+        if (session?.user?.name) {
+            setName(session.user.name)
+        }
+
+        const checkGoogleAuth = async () => {
+            try {
+                const res = await authClient.listAccounts()
+                if (res.data) {
+                    const hasGoogle = res.data.some((acc: any) => acc.providerId === "google" || acc.provider === "google")
+                    setIsGoogleAuth(hasGoogle)
+                }
+            } catch (error) {
+                console.error("Failed to list accounts", error)
+            }
+        }
+
+        if (session?.user) {
+            checkGoogleAuth()
+        }
+    }, [session])
+
+    const handleUpdateName = async () => {
+        if (!name) return
+        setIsUpdatingName(true)
+        await authClient.updateUser({
+            name: name
+        }, {
+            onSuccess: () => {
+                toast.success("Name updated successfully")
+                setIsUpdatingName(false)
+            },
+            onError: (ctx) => {
+                toast.error(ctx.error.message || "Failed to update name")
+                setIsUpdatingName(false)
+            }
+        })
+    }
+
+    const handleChangePassword = async () => {
+        if (!currentPassword || !newPassword) {
+            toast.error("Please fill in both password fields.")
+            return
+        }
+        setIsChangingPassword(true)
+        await authClient.changePassword({
+            newPassword: newPassword,
+            currentPassword: currentPassword,
+            revokeOtherSessions: true
+        }, {
+            onSuccess: () => {
+                toast.success("Password changed successfully")
+                setCurrentPassword("")
+                setNewPassword("")
+                setIsChangingPassword(false)
+            },
+            onError: (ctx) => {
+                toast.error(ctx.error.message || "Failed to change password")
+                setIsChangingPassword(false)
+            }
+        })
+    }
+
+    const handleDeleteAccount = async () => {
+        if (!confirm("Are you sure you want to permanently delete your account? This action cannot be undone.")) return
+        setIsDeletingAccount(true)
+        await authClient.deleteUser({
+            fetchOptions: {
+                onSuccess: () => {
+                    toast.success("Account deleted successfully")
+                    router.push("/login")
+                },
+                onError: (ctx) => {
+                    toast.error(ctx.error.message || "Failed to delete account")
+                    setIsDeletingAccount(false)
+                }
+            }
+        })
+    }
     return (
         <section className="p-6 bg-background/50 min-h-full space-y-8">
             <div className="max-w-4xl mx-auto">
@@ -31,23 +126,28 @@ export default function SettingsPage() {
                         <div className="grid gap-6 md:grid-cols-2">
                             <div className="space-y-2">
                                 <label className="text-sm text-muted-foreground font-medium">Display Name</label>
-                                <div className="relative">
+                                <div className="flex gap-3">
                                     <input
                                         type="text"
-                                        defaultValue="Alex Trader"
-                                        className="w-full bg-background border border-border rounded-lg px-4 py-2.5 text-foreground focus:outline-none focus:border-emerald-500 transition-colors"
+                                        value={name}
+                                        onChange={(e) => setName(e.target.value)}
+                                        disabled={isPending || isUpdatingName}
+                                        className="w-full bg-background border border-border rounded-lg px-4 py-2.5 text-foreground focus:outline-none focus:border-emerald-500 transition-colors disabled:opacity-50"
                                     />
+                                    <Button onClick={handleUpdateName} disabled={isPending || isUpdatingName || name === session?.user?.name} className="h-[42px] bg-emerald-600 hover:bg-emerald-700 text-white">
+                                        {isUpdatingName ? <Loader2 className="animate-spin w-4 h-4" /> : "Save"}
+                                    </Button>
                                 </div>
                             </div>
                             <div className="space-y-2">
                                 <label className="text-sm text-muted-foreground font-medium">Email Address</label>
                                 <input
                                     type="email"
-                                    defaultValue="alex@example.com"
+                                    value={session?.user?.email || ""}
                                     disabled
                                     className="w-full bg-muted/50 border border-border rounded-lg px-4 py-2.5 text-muted-foreground cursor-not-allowed"
                                 />
-                                <p className="text-xs text-muted-foreground">To change your email, use the Security section below.</p>
+                                <p className="text-xs text-muted-foreground">Contact support to change your email address.</p>
                             </div>
                         </div>
 
@@ -129,48 +229,44 @@ export default function SettingsPage() {
                         </div>
                     </div>
 
-                    {/* Change Email */}
-                    <div className="bg-card p-6 rounded-2xl border border-border shadow-sm">
-                        <h2 className="text-xl font-semibold text-card-foreground mb-6 flex items-center gap-2">
-                            <Mail className="w-5 h-5 text-blue-500" />
-                            Change Email
-                        </h2>
-                        <div className="max-w-md space-y-4">
-                            <div className="space-y-2">
-                                <label className="text-sm text-muted-foreground font-medium">New Email Address</label>
-                                <input
-                                    type="email"
-                                    placeholder="Enter new email"
-                                    className="w-full bg-background border border-border rounded-lg px-4 py-2.5 text-foreground focus:outline-none focus:border-blue-500 transition-colors"
-                                />
-                            </div>
-                            <Button className="bg-blue-600 hover:bg-blue-700 text-white">Update Email</Button>
-                        </div>
-                    </div>
-
                     {/* Change Password */}
                     <div className="bg-card p-6 rounded-2xl border border-border shadow-sm">
                         <h2 className="text-xl font-semibold text-card-foreground mb-6 flex items-center gap-2">
                             <Key className="w-5 h-5 text-orange-500" />
                             Change Password
                         </h2>
-                        <div className="max-w-md space-y-4">
-                            <div className="space-y-2">
-                                <label className="text-sm text-muted-foreground font-medium">Current Password</label>
-                                <input
-                                    type="password"
-                                    className="w-full bg-background border border-border rounded-lg px-4 py-2.5 text-foreground focus:outline-none focus:border-orange-500 transition-colors"
-                                />
+                        {isGoogleAuth ? (
+                            <div className="p-4 bg-muted/50 rounded-xl border border-border">
+                                <p className="text-muted-foreground">You are authenticated using Google.</p>
                             </div>
-                            <div className="space-y-2">
-                                <label className="text-sm text-muted-foreground font-medium">New Password</label>
-                                <input
-                                    type="password"
-                                    className="w-full bg-background border border-border rounded-lg px-4 py-2.5 text-foreground focus:outline-none focus:border-orange-500 transition-colors"
-                                />
+                        ) : (
+                            <div className="max-w-md space-y-4">
+                                <div className="space-y-2">
+                                    <label className="text-sm text-muted-foreground font-medium">Current Password</label>
+                                    <input
+                                        type="password"
+                                        value={currentPassword}
+                                        onChange={(e) => setCurrentPassword(e.target.value)}
+                                        disabled={isChangingPassword}
+                                        className="w-full bg-background border border-border rounded-lg px-4 py-2.5 text-foreground focus:outline-none focus:border-orange-500 transition-colors disabled:opacity-50"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-sm text-muted-foreground font-medium">New Password</label>
+                                    <input
+                                        type="password"
+                                        value={newPassword}
+                                        onChange={(e) => setNewPassword(e.target.value)}
+                                        disabled={isChangingPassword}
+                                        className="w-full bg-background border border-border rounded-lg px-4 py-2.5 text-foreground focus:outline-none focus:border-orange-500 transition-colors disabled:opacity-50"
+                                    />
+                                </div>
+                                <Button onClick={handleChangePassword} disabled={isChangingPassword || !currentPassword || !newPassword} className="bg-muted hover:bg-muted/80 text-foreground border border-border">
+                                    {isChangingPassword ? <Loader2 className="animate-spin w-4 h-4 mr-2" /> : null}
+                                    Update Password
+                                </Button>
                             </div>
-                            <Button className="bg-muted hover:bg-muted/80 text-foreground border border-border">Update Password</Button>
-                        </div>
+                        )}
                     </div>
 
                     {/* Danger Zone - Delete Account */}
@@ -184,7 +280,10 @@ export default function SettingsPage() {
                                 <p className="text-foreground font-medium">Delete Account</p>
                                 <p className="text-sm text-muted-foreground mt-1">Permanently remove your account and all of its content.</p>
                             </div>
-                            <Button variant="destructive" className="bg-destructive/10 hover:bg-destructive text-destructive hover:text-white border border-destructive/30">Delete Account</Button>
+                            <Button onClick={handleDeleteAccount} disabled={isDeletingAccount} variant="destructive" className="bg-destructive/10 hover:bg-destructive text-destructive hover:text-white border border-destructive/30">
+                                {isDeletingAccount ? <Loader2 className="animate-spin w-4 h-4 mr-2" /> : null}
+                                Delete Account
+                            </Button>
                         </div>
                     </div>
 

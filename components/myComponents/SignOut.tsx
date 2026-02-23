@@ -13,8 +13,7 @@ const SignOut = ({ collapsed, className }: { collapsed?: boolean, className?: st
     await authClient.signOut({    // Functia de signOut din Betterauth
       fetchOptions: {
         onSuccess: () => {
-          router.push("/login"); // Trimitem utilizatorul la Login după ce a ieșit
-          router.refresh();
+          router.push("/login?message=logged-out");
         }
       }
     })

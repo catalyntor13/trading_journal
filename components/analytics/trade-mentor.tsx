@@ -11,6 +11,7 @@ interface TradeMentorProps {
         winRateValue: number
         sharpeRatioValue: number
         currentLossStreak: number
+        totalTransactions?: number
     }
 }
 
@@ -193,6 +194,23 @@ export function TradeMentor({ stats }: TradeMentorProps) {
 
     const feedbackItems = getFeedback()
 
+    if (stats.totalTransactions === 0) {
+        return (
+            <Card className="col-span-1 lg:col-span-2 border-border bg-card shadow-sm h-full flex flex-col">
+                <CardHeader className="pb-3 border-b border-border/50">
+                    <CardTitle className="text-xl font-bold flex items-center gap-2">
+                        <Target className="w-5 h-5 text-primary" />
+                        Trade Mentor
+                    </CardTitle>
+                    <p className="text-sm text-muted-foreground">AI-driven analysis of your trading behavior.</p>
+                </CardHeader>
+                <CardContent className="space-y-4 pt-12 flex flex-col items-center justify-center h-full">
+                    <p className="text-muted-foreground text-center">That are no trades for this account yet.</p>
+                </CardContent>
+            </Card>
+        )
+    }
+
     return (
         <Card className="col-span-1 lg:col-span-2 border-border bg-card shadow-sm h-full flex flex-col">
             <CardHeader className="pb-3 border-b border-border/50">
@@ -206,19 +224,19 @@ export function TradeMentor({ stats }: TradeMentorProps) {
                 <div className="grid gap-4">
                     {feedbackItems.map((item, index) => (
                         <div key={index} className={`flex gap-4 p-4 rounded-xl border transition-all hover:scale-[1.01] ${item.status === 'success' ? 'bg-emerald-500/5 border-emerald-500/10 hover:border-emerald-500/20' :
-                                item.status === 'warning' ? 'bg-orange-500/5 border-orange-500/10 hover:border-orange-500/20' :
-                                    'bg-red-500/5 border-red-500/10 hover:border-red-500/20'
+                            item.status === 'warning' ? 'bg-orange-500/5 border-orange-500/10 hover:border-orange-500/20' :
+                                'bg-red-500/5 border-red-500/10 hover:border-red-500/20'
                             }`}>
                             <div className={`mt-0.5 p-2 rounded-lg h-fit ${item.status === 'success' ? 'bg-emerald-500/10 text-emerald-500' :
-                                    item.status === 'warning' ? 'bg-orange-500/10 text-orange-500' :
-                                        'bg-red-500/10 text-red-500'
+                                item.status === 'warning' ? 'bg-orange-500/10 text-orange-500' :
+                                    'bg-red-500/10 text-red-500'
                                 }`}>
                                 <item.icon className="w-5 h-5" />
                             </div>
                             <div>
                                 <h4 className={`text-base font-bold mb-1 ${item.status === 'success' ? 'text-emerald-500' :
-                                        item.status === 'warning' ? 'text-orange-500' :
-                                            'text-red-500'
+                                    item.status === 'warning' ? 'text-orange-500' :
+                                        'text-red-500'
                                     }`}>
                                     {item.category}
                                 </h4>

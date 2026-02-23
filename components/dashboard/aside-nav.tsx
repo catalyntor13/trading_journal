@@ -1,10 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import Logo from "../myComponents/Logo"
 import {
   LayoutDashboard,
-  History,
   Settings,
   ChevronLeft,
   ChevronRight,
@@ -44,7 +42,7 @@ export default function AsideNav() {
       <div className={cn("p-6 flex items-center h-20", isCollapsed ? "justify-center" : "justify-start")}>
         {isCollapsed ? (
           <div className="relative">
-            <div className="absolute inset-0 bg-primary blur-md opacity-40 rounded-full"></div>
+
             <svg
               width="28"
               height="28"
@@ -63,7 +61,29 @@ export default function AsideNav() {
             </svg>
           </div>
         ) : (
-          <span><Logo /></span>
+          <div className="relative flex items-center gap-2">
+
+            <svg
+              width="28"
+              height="28"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              className="text-primary relative z-10"
+            >
+              <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5" />
+              <path
+                d="M3 12c2-1 5-2 9-2s7 1 9 2"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+              />
+            </svg>
+            <span className="tracking-wide text-slate-700 uppercase font-semibold">
+              Journal
+            </span>
+          </div>
+
         )}
       </div>
 

@@ -5,4 +5,4 @@ export const authClient = createAuthClient({
 });
 
 // Exportăm hook-urile direct pentru ușurință
-export const { signIn, signUp, useSession, signOut, requestPasswordReset, resetPassword } = authClient;
+export const { signIn, signUp, useSession, signOut, requestPasswordReset, resetPassword, deleteUser } = authClient;
