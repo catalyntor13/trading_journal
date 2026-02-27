@@ -14,7 +14,6 @@ import { usePathname, useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import Logo from "../myComponents/Logo"
 import { authClient } from "@/lib/auth-client"
-import SignOut from "../myComponents/SignOut"
 
 
 export function MobileNav() {
@@ -133,7 +132,18 @@ export function MobileNav() {
                         </li>
 
                         <li>
-                            <SignOut />
+                            <button
+                                type="button"
+                                onClick={() => handleSignOut()}
+                                onTouchEnd={(e) => {
+                                    e.preventDefault()
+                                    handleSignOut()
+                                }}
+                                className="flex gap-3 w-full items-center px-3 py-3 rounded-xl transition-all duration-200 cursor-pointer text-slate-400 hover:text-red-400 hover:bg-red-500/10 group active:bg-red-500/20"
+                            >
+                                <LogOut className="transition-colors shrink-0 w-5 h-5 group-hover:text-red-400 text-slate-400" />
+                                <span className="font-medium text-sm">Sign Out</span>
+                            </button>
                         </li>
                     </ul>
                 </div>
