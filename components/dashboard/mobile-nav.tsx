@@ -21,8 +21,8 @@ export function MobileNav() {
     const pathname = usePathname()
     const router = useRouter()
 
-    const handleSignOut = async (e: React.MouseEvent) => {
-        e.preventDefault()
+    const handleSignOut = async () => {
+        setOpen(false) // Close immediately for perceived speed
         await authClient.signOut({
             fetchOptions: {
                 onSuccess: () => {
@@ -65,8 +65,12 @@ export function MobileNav() {
                                     <li key={item.name}>
                                         <button
                                             type="button"
-                                            onClick={(e) => handleSignOut(e)}
-                                            className="flex gap-3 w-full items-center px-3 py-3 rounded-xl transition-all duration-200 cursor-pointer text-slate-400 hover:text-red-400 hover:bg-red-500/10 group"
+                                            onClick={() => handleSignOut()}
+                                            onTouchEnd={(e) => {
+                                                e.preventDefault() // prevent double firing of click
+                                                handleSignOut()
+                                            }}
+                                            className="flex gap-3 w-full items-center px-3 py-3 rounded-xl transition-all duration-200 cursor-pointer text-slate-400 hover:text-red-400 hover:bg-red-500/10 group active:bg-red-500/20"
                                         >
                                             <item.icon className="transition-colors shrink-0 w-5 h-5 group-hover:text-red-400 text-slate-400" />
                                             <span className="font-medium text-sm">{item.name}</span>
