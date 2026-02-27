@@ -39,7 +39,7 @@ export function MobileNav() {
         { name: "Strategies", icon: Target, href: '/strategies' },
         { name: "Analytics", icon: History, href: '/analytics' },
         { name: "Settings", icon: Settings, href: '/settings' },
-        { name: "Sign Out", icon: LogOut, href: '/sign-out' },
+        { name: "Sign Out", icon: LogOut, href: '#' },
     ]
 
     return (
