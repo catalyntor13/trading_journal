@@ -243,12 +243,33 @@ export async function getDashboardStats(accountId?: string) {
 
     // Handle empty state
     if (cumulativeChartData.length === 0) {
+        const today = new Date();
+        const yesterday = new Date(today);
+        yesterday.setDate(yesterday.getDate() - 1);
+
         cumulativeChartData.push({
-            date: formatShortDate(new Date().toISOString()),
-            rawDate: new Date().toISOString().split('T')[0],
+            date: formatShortDate(yesterday.toISOString()),
+            rawDate: yesterday.toISOString().split('T')[0],
             dailyProfit: 0,
             balance: initialBalance
-        })
+        });
+        cumulativeChartData.push({
+            date: formatShortDate(today.toISOString()),
+            rawDate: today.toISOString().split('T')[0],
+            dailyProfit: 0,
+            balance: initialBalance
+        });
+    } else if (cumulativeChartData.length === 1) {
+        // Prepend a dummy start point to ensure Recharts draws a line
+        const firstPoint = cumulativeChartData[0];
+        const d = new Date(firstPoint.rawDate);
+        d.setDate(d.getDate() - 1);
+        cumulativeChartData.unshift({
+            date: formatShortDate(d.toISOString()),
+            rawDate: d.toISOString().split('T')[0],
+            dailyProfit: 0,
+            balance: initialBalance
+        });
     }
 
     // Determine strict consecutive stop losses (Is it current streak or max streak? Prompt implies "Consecutive Stop Losses" status, usually current status for mentor)

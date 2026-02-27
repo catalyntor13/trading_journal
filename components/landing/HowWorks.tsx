@@ -46,18 +46,18 @@ const HowWorks = () => {
 
           <div className="grid md:grid-cols-4 gap-8 relative z-10">
             {steps.map((step, index) => (
-              <div key={index} className="flex flex-col items-center text-center group">
+              <div key={index} className="flex flex-col items-center text-center group h-full">
                 {/* Number Circle */}
-                <div className="w-16 h-16 rounded-full bg-slate-900 border border-white/10 flex items-center justify-center mb-6 group-hover:border-orange-500/50 transition-all duration-500 shadow-xl relative">
+                <div className="w-16 h-16 rounded-full bg-slate-900 border border-white/10 flex items-center justify-center mb-6 group-hover:border-orange-500/50 transition-all duration-500 shadow-xl relative shrink-0">
                   <span className="text-orange-500 font-black text-xl">{step.number}</span>
                   {/* Glow Effect on Hover */}
                   <div className="absolute inset-0 rounded-full bg-orange-500/0 group-hover:bg-orange-500/10 blur-md transition-all"></div>
                 </div>
 
-                <div className="p-6 rounded-2xl bg-white/5 border border-white/5 backdrop-blur-sm group-hover:bg-white/[0.08] transition-all">
+                <div className="p-6 rounded-2xl bg-white/5 border border-white/5 backdrop-blur-sm group-hover:bg-white/[0.08] transition-all flex flex-col w-full flex-1">
                   <div className="text-3xl mb-4">{step.icon}</div>
                   <h4 className="text-xl font-bold text-white mb-3">{step.title}</h4>
-                  <p className="text-slate-400 text-sm leading-relaxed">
+                  <p className="text-slate-400 text-sm leading-relaxed mb-auto">
                     {step.desc}
                   </p>
                 </div>
@@ -69,8 +69,8 @@ const HowWorks = () => {
         {/* Call to Action for Steps */}
         <div className="mt-20 flex justify-center">
           <div className="p-1 rounded-full bg-gradient-to-r from-orange-500/20 to-transparent">
-            <button className="px-8 py-3 bg-slate-950 text-white rounded-full border border-orange-500/30 hover:border-orange-500 transition-all flex items-center gap-3 group">
-              Start Your Journal Now
+            <button className="px-8 py-3 bg-orange-700 text-white cursor-pointer rounded-full border border-orange-500/30 hover:border-orange-500 transition-all flex items-center gap-3 group">
+              Start Journaling Now
               <span className="group-hover:translate-x-1 transition-transform">→</span>
             </button>
           </div>

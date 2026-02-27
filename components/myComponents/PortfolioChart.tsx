@@ -18,12 +18,6 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 
-const chartConfig = {
-  balance: {
-    label: "Balance",
-    color: "var(--chart-5)",
-  },
-} satisfies ChartConfig;
 
 export function PortfolioChart({ data }: { data: { date: string; balance: number }[] }) {
 
@@ -32,16 +26,28 @@ export function PortfolioChart({ data }: { data: { date: string; balance: number
   const diff = end - start
   const percent = start !== 0 ? ((diff / Math.abs(start)) * 100).toFixed(1) : "0.0"
 
+  const isProfit = diff >= 0;
+  const lineColor = isProfit ? "#10b981" : "#ef4444"; // emerald-500 for profit, red-500 for loss
+
+  const dynamicConfig = {
+    balance: {
+      label: "Balance",
+      color: lineColor,
+    },
+  } satisfies ChartConfig;
+
   return (
-    <Card className="border-border bg-card shadow-sm">
-      <CardHeader>
-        <CardTitle className="text-foreground">Cumulative PnL</CardTitle>
-        <CardDescription className="text-muted-foreground">
+    <Card className="bg-[#0A101C] border border-slate-800/60 rounded-2xl shadow-lg relative overflow-hidden group">
+      <div className={`absolute top-0 left-1/2 -translate-x-1/2 w-[80%] h-32 blur-[80px] pointer-events-none transition-colors duration-1000 ${isProfit ? 'bg-emerald-500/10' : 'bg-red-500/10'}`} />
+
+      <CardHeader className="relative z-10">
+        <CardTitle className="text-white text-xl">Cumulative PnL</CardTitle>
+        <CardDescription className="text-slate-400">
           Net Profit accumulation over selected period
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig} className="h-[300px] w-full">
+      <CardContent className="relative z-10">
+        <ChartContainer config={dynamicConfig} className="h-[300px] w-full">
           <AreaChart
             accessibilityLayer
             data={data}
@@ -55,8 +61,8 @@ export function PortfolioChart({ data }: { data: { date: string; balance: number
             <CartesianGrid
               vertical={false}
               strokeDasharray="3 3"
-              stroke="var(--border)"
-              strokeOpacity={0.5}
+              stroke="#1e293b"
+              strokeOpacity={0.6}
             />
             <XAxis
               dataKey="date"
@@ -65,13 +71,13 @@ export function PortfolioChart({ data }: { data: { date: string; balance: number
               tickMargin={8}
               minTickGap={32}
               tickFormatter={(value) => value}
-              stroke="var(--muted-foreground)"
+              stroke="#64748b"
             />
             <YAxis
               tickLine={false}
               axisLine={false}
               tickMargin={8}
-              stroke="var(--muted-foreground)"
+              stroke="#64748b"
               tickFormatter={(value) => `$${value}`}
             />
             <ChartTooltip
@@ -82,12 +88,12 @@ export function PortfolioChart({ data }: { data: { date: string; balance: number
               <linearGradient id="fillBalance" x1="0" y1="0" x2="0" y2="1">
                 <stop
                   offset="5%"
-                  stopColor="var(--color-balance)"
+                  stopColor={lineColor}
                   stopOpacity={0.8}
                 />
                 <stop
                   offset="95%"
-                  stopColor="var(--color-balance)"
+                  stopColor={lineColor}
                   stopOpacity={0.1}
                 />
               </linearGradient>
@@ -97,18 +103,18 @@ export function PortfolioChart({ data }: { data: { date: string; balance: number
               type="natural"
               fill="url(#fillBalance)"
               fillOpacity={0.4}
-              stroke="var(--color-balance)"
+              stroke={lineColor}
               strokeWidth={2}
               stackId="a"
             />
           </AreaChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter>
+      <CardFooter className="relative z-10 border-t border-slate-800/50 pt-4 mt-2">
         <div className="flex w-full items-start gap-2 text-sm leading-none">
           <div className="grid gap-2">
-            <div className={`flex items-center gap-2 font-medium leading-none ${diff >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-              Average Growth {diff >= 0 ? '+' : ''}{percent}% <TrendingUp className="h-4 w-4" />
+            <div className={`flex items-center gap-2 font-bold leading-none ${isProfit ? 'text-emerald-400' : 'text-red-400'}`}>
+              Average Growth {isProfit ? '+' : ''}{percent}% <TrendingUp className="h-4 w-4" />
             </div>
           </div>
         </div>

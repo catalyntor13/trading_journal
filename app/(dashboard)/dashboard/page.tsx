@@ -21,17 +21,17 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   }
 
   return (
-    <section className="p-6 space-y-8 min-h-full bg-background/50">
+    <section className="p-6 space-y-8 min-h-full">
 
       {/* HEADER */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-foreground tracking-tight">My Portfolio</h1>
-          <p className="text-muted-foreground text-sm">Overview of your trading performance</p>
+          <h1 className="text-3xl font-medium text-slate-300 tracking-tight">My Portfolio</h1>
+          <p className="text-slate-400 text-sm">Overview of your trading performance</p>
         </div>
 
-        <div className="flex items-center gap-2 bg-card p-1.5 rounded-xl border border-border shadow-sm">
-          <Wallet className="w-4 h-4 text-muted-foreground ml-2" />
+        <div className="flex items-center gap-2 bg-[#0A101C] p-1.5 rounded-xl border border-slate-800/60 shadow-sm">
+          <Wallet className="w-4 h-4 text-slate-400 ml-2" />
           <AccountSelector accounts={accounts} />
         </div>
       </div>

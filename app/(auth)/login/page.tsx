@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Loader } from "lucide-react";
 import { FaGoogle } from "react-icons/fa";
 import { authClient, useSession } from "@/lib/auth-client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -24,7 +24,7 @@ const LoginSchema = z.object({
 type LoginSchemaData = z.infer<typeof LoginSchema>;
 
 // 3. Funcția de submit
-export default function LoginPage() {
+function LoginContent() {
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter();
 
@@ -168,6 +168,14 @@ export default function LoginPage() {
       </div>
     </AuthCard>
   );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-[100dvh] bg-[#060B14] flex items-center justify-center"><Loader className="animate-spin text-cyan-500 w-8 h-8" /></div>}>
+      <LoginContent />
+    </Suspense>
+  )
 }
 
 

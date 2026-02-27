@@ -1,36 +1,30 @@
 
-const Logo = () => {
+const Logo = ({ collapsed }: { collapsed?: boolean }) => {
   return (
-    <div className="flex items-center gap-2 text-foreground font-semibold text-xl cursor-pointer hover:opacity-90 transition-opacity">
-      <div className="relative">
-        <div className="absolute inset-0 bg-primary blur-lg opacity-20 rounded-full"></div>
+    <div className="flex items-center gap-3 text-foreground font-semibold text-xl cursor-pointer hover:opacity-90 transition-opacity">
+      <div className="relative flex items-center justify-center">
+        <div className="absolute inset-0 bg-orange-500 blur-lg opacity-30 rounded-full scale-150"></div>
         <svg
-          width="28"
-          height="28"
+          width="32"
+          height="32"
           viewBox="0 0 24 24"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          className="text-primary relative z-10"
+          className="text-orange-500 relative z-10"
         >
-          <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5" />
-          <path
-            d="M3 12c2-1 5-2 9-2s7 1 9 2"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-          />
-          <path
-            d="M5 15c2-.8 4.5-1.2 7-1.2s5 .4 7 1.2"
-            stroke="currentColor"
-            strokeWidth="1"
-            strokeLinecap="round"
-            opacity="0.7"
-          />
+          <circle cx="12" cy="12" r="9" fill="currentColor" />
+          <circle cx="9" cy="9" r="2.5" fill="#9a3412" opacity="0.6" />
+          <circle cx="14" cy="14" r="3" fill="#9a3412" opacity="0.5" />
+          <circle cx="16" cy="7" r="1.5" fill="#9a3412" opacity="0.6" />
+          <circle cx="7" cy="14" r="1" fill="#9a3412" opacity="0.5" />
+          <circle cx="12" cy="17" r="2" fill="#9a3412" opacity="0.4" />
         </svg>
       </div>
-      <span className="tracking-wide text-slate-100 uppercase font-bold">
-        Journal
-      </span>
+      {!collapsed && (
+        <span className="tracking-wide text-white uppercase font-bold drop-shadow-[0_0_8px_rgba(249,115,22,0.4)]">
+          Journal
+        </span>
+      )}
     </div>
   );
 };

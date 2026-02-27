@@ -21,13 +21,13 @@ const Hero = () => {
           </div>
 
 
-          <div className="flex">
-            <h1 className="text-4xl lg:text-7xl font-extrabold text-white mb-6 leading-[1.1] tracking-tight">Trade with</h1>
-            <span className="text-4xl lg:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-red-600 ml-2">Precision</span>
-          </div>
+
+          <h1 className="text-5xl lg:text-6xl font-extrabold text-center text-white mb-6 leading-[1.1] tracking-tight">Trade with <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-red-600 ml-2">Precision</span></h1>
 
 
-          <p className="text-lg md:text-xl text-slate-400 mb-10 max-w-2xl leading-relaxed">
+
+
+          <p className="text-lg md:text-xl text-center text-slate-400 mb-10 max-w-2xl leading-relaxed">
             Master your execution with a journal built for clarity. Track your trades, visualize your account statistics, and continuously improve your strategy through data-backed insights.
           </p>
 

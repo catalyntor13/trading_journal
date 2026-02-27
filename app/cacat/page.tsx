@@ -2,253 +2,167 @@
 
 import React from 'react';
 import {
-    LayoutDashboard, Calendar as CalendarIcon, Users, MessageSquare,
-    Briefcase, BookOpen, Settings, Search, Bell, Cloud, MoreHorizontal, Star
+    Target, Brain, BarChart3, Satellite, PenTool,
+    Search, TrendingUp, ArrowRight, Menu
 } from 'lucide-react';
 
-export default function EduvoDashboard() {
+export default function MarsLandingPageWithBackground() {
     return (
-        // Setăm un fundal foarte închis (Dark Blue/Black) specific designului
-        <div className="min-h-screen bg-[#060B14] text-slate-200 font-sans p-4 md:p-6 flex gap-6">
+        <div className="min-h-screen bg-[#030712] text-slate-200 font-sans selection:bg-orange-500/30 overflow-hidden relative">
 
-            {/* --- Sidebar (Stânga) --- */}
-            <aside className="hidden lg:flex flex-col w-64 bg-[#0A101C] rounded-2xl border border-slate-800/60 p-5 shrink-0 relative overflow-hidden">
-                {/* Un glow subtil de fundal în meniu */}
-                <div className="absolute top-0 left-0 w-full h-32 bg-cyan-500/5 blur-[80px] pointer-events-none" />
+            {/* ================= BACKGROUND LAYERS ================= */}
 
-                <div className="flex items-center gap-3 mb-10 px-2">
-                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-400 to-teal-500 flex items-center justify-center shadow-[0_0_15px_rgba(34,211,238,0.4)]">
-                        <BookOpen className="w-5 h-5 text-white" />
+            {/* Layer 1: Imaginea de fundal (Marte / Spațiu) */}
+            {/* Folosim o imagine de stoc dramatică și o întunecăm semnificativ */}
+            <div className="absolute inset-0 z-0">
+                <img
+                    src="https://images.unsplash.com/photo-1636819488537-a9b1ffb315ce?q=80&w=2532&auto=format&fit=crop&ixlib=rb-4.0.3"
+                    alt="Mars Trading Background"
+                    className="w-full h-full object-cover opacity-40 blur-[2px] scale-105"
+                />
+                {/* Un overlay gradient puternic pentru a asigura contrastul textului */}
+                <div className="absolute inset-0 bg-gradient-to-b from-[#030712]/90 via-[#030712]/80 to-[#030712]"></div>
+            </div>
+
+            {/* Layer 2: Grafică subtilă de trading (Grid Overlay) */}
+            {/* Adăugăm un model de grilă foarte fin pentru a da senzația de interfață tehnică */}
+            <div
+                className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none"
+                style={{
+                    backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px)`,
+                    backgroundSize: '50px 50px'
+                }}
+            />
+
+            {/* Layer 3: Ambient Glows (Luminile Neon originale) */}
+            {/* Acestea rămân peste imagine pentru a da efectul volumetric */}
+            <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-orange-600/20 blur-[120px] rounded-full pointer-events-none z-0" />
+            <div className="absolute top-[30%] left-[-20%] w-[600px] h-[600px] bg-red-700/10 blur-[150px] rounded-full pointer-events-none z-0" />
+
+            {/* ================= FOREGROUND CONTENT ================= */}
+
+            {/* --- Navbar --- */}
+            {/* Am crescut puțin opacitatea fundalului la navbar pentru separare mai bună */}
+            <nav className="relative z-50 flex items-center justify-between px-6 py-5 max-w-7xl mx-auto border-b border-slate-800/40 backdrop-blur-xl bg-[#030712]/60">
+                <div className="flex items-center gap-2">
+                    {/* Logo Marte */}
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-orange-600 to-red-500 shadow-[0_0_20px_rgba(234,88,12,0.6)] flex items-center justify-center border border-orange-400/20">
+                        <div className="w-6 h-1 border-t-2 border-white/50 rounded-full transform -rotate-12" />
                     </div>
-                    <span className="text-xl font-bold tracking-wide text-white">Eduvo</span>
+                    <span className="text-xl font-bold tracking-widest text-white drop-shadow-md">MARS <span className="text-orange-500/80 font-medium">TRADING</span></span>
                 </div>
 
-                <nav className="flex flex-col gap-2">
-                    <NavItem icon={<LayoutDashboard size={20} />} label="Dashboard" active />
-                    <NavItem icon={<CalendarIcon size={20} />} label="Calendar" />
-                    <NavItem icon={<Users size={20} />} label="Elevi" />
-                    <NavItem icon={<MessageSquare size={20} />} label="Mesaje" />
-                    <NavItem icon={<Briefcase size={20} />} label="Booking" />
-                    <NavItem icon={<BookOpen size={20} />} label="Resurse" />
-                    <NavItem icon={<Settings size={20} />} label="Setări" />
-                </nav>
-            </aside>
+                {/* Desktop Links */}
+                <div className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
+                    <a href="#" className="hover:text-orange-400 transition-colors">How it works</a>
+                    <a href="#" className="hover:text-orange-400 transition-colors">Features</a>
+                    <a href="#" className="hover:text-orange-400 transition-colors">Pricing</a>
+                </div>
 
-            {/* --- Main Content (Dreapta) --- */}
-            <main className="flex-1 flex flex-col min-w-0 gap-6">
+                {/* CTA */}
+                <div className="flex items-center gap-4">
+                    <button className="hidden md:inline-flex items-center justify-center px-6 py-2.5 text-sm font-bold text-white bg-gradient-to-r from-orange-600 via-red-500 to-orange-600 bg-[length:200%_auto] hover:bg-right transition-all duration-500 rounded-full shadow-[0_0_25px_rgba(234,88,12,0.4)]">
+                        Get Started
+                    </button>
+                    <button className="md:hidden text-slate-300">
+                        <Menu className="w-6 h-6" />
+                    </button>
+                </div>
+            </nav>
 
-                {/* Topbar */}
-                <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-[#0A101C] p-4 rounded-2xl border border-slate-800/60">
-                    <div className="relative w-full sm:w-80">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
-                        <input
-                            type="text"
-                            placeholder="Caută..."
-                            className="w-full bg-[#111827] border border-slate-700/50 rounded-xl py-2 pl-10 pr-4 text-sm text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50 transition-colors"
-                        />
+            <main className="relative z-10 max-w-7xl mx-auto px-6">
+
+                {/* --- Hero Section --- */}
+                <section className="pt-24 pb-32 flex flex-col items-center text-center relative">
+
+                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-orange-500/30 bg-orange-950/30 mb-8 backdrop-blur-md shadow-[0_0_15px_rgba(234,88,12,0.1)]">
+                        <Satellite className="w-4 h-4 text-orange-400 mr-1" />
+                        <span className="text-xs font-bold tracking-[0.2em] text-orange-300 uppercase">Mission Control for your Capital</span>
                     </div>
-                    <div className="flex items-center gap-4 self-end sm:self-auto">
-                        <button className="relative text-slate-400 hover:text-white transition-colors">
-                            <Bell size={20} />
-                            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-[#0A101C]"></span>
-                        </button>
-                        <button className="text-slate-400 hover:text-white transition-colors">
-                            <Cloud size={20} />
-                        </button>
-                        <div className="w-9 h-9 rounded-full bg-slate-700 border-2 border-slate-600 overflow-hidden ml-2">
-                            <img src="https://i.pravatar.cc/150?img=47" alt="Profile" className="w-full h-full object-cover" />
-                        </div>
-                    </div>
-                </header>
 
-                {/* Greeting */}
-                <div className="mt-2">
-                    <h1 className="text-2xl md:text-3xl font-medium text-slate-300">
-                        Bun venit, <span className="text-cyan-400 font-bold drop-shadow-[0_0_8px_rgba(34,211,238,0.5)]">Profesor!</span>
+                    <h1 className="text-5xl md:text-8xl font-extrabold text-white tracking-tight mb-8 max-w-5xl drop-shadow-xl leading-tight">
+                        Trade with <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-red-500 to-orange-500 drop-shadow-[0_0_25px_rgba(234,88,12,0.5)]">Precision</span>
                     </h1>
-                </div>
 
-                {/* Dashboard Grid */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <p className="text-lg md:text-xl text-slate-300 max-w-2xl mb-12 leading-relaxed drop-shadow-sm">
+                        Master your execution with the journal built for elite performance. Track trades, analyze psychology, and visualize your edge against the backdrop of the market data across the cosmos.
+                    </p>
 
-                    {/* Coloana Stânga (Stats + Calendar) */}
-                    <div className="lg:col-span-2 space-y-6">
+                    <button className="group relative px-8 py-4 bg-white text-slate-950 text-base font-bold rounded-xl overflow-hidden shadow-[0_0_40px_rgba(255,255,255,0.15)] transition-all hover:scale-105 active:scale-95">
+                        <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-orange-200 to-red-200 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <span className="relative z-10 flex items-center gap-2">
+                            Start Journaling Sequence <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                        </span>
+                    </button>
 
-                        {/* Stats Row */}
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="bg-[#0A101C] border border-slate-800/60 rounded-2xl p-5 flex items-center justify-between">
-                                <div>
-                                    <p className="text-slate-400 text-sm font-medium mb-1">Lecții Azi</p>
-                                    <p className="text-3xl font-bold text-white">12</p>
-                                </div>
-                                <div className="w-12 h-12 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center text-orange-400 shadow-[0_0_15px_rgba(249,115,22,0.15)]">
-                                    <CalendarIcon size={24} />
-                                </div>
-                            </div>
-                            <div className="bg-[#0A101C] border border-slate-800/60 rounded-2xl p-5 flex items-center justify-between">
-                                <div>
-                                    <p className="text-slate-400 text-sm font-medium mb-1">Mesaje</p>
-                                    <p className="text-3xl font-bold text-white">8</p>
-                                </div>
-                                <div className="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 shadow-[0_0_15px_rgba(168,85,247,0.15)]">
-                                    <MessageSquare size={24} />
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Calendar View */}
-                        <div className="bg-[#0A101C] border border-slate-800/60 rounded-2xl p-6">
-                            <div className="flex justify-between items-center mb-6">
-                                <h2 className="text-lg font-bold text-white">Calendar</h2>
-                                <div className="flex bg-[#111827] rounded-lg p-1 border border-slate-800">
-                                    <button className="px-4 py-1 text-sm rounded-md bg-slate-800 text-white font-medium shadow-sm">Zi</button>
-                                    <button className="px-4 py-1 text-sm rounded-md text-slate-400 hover:text-white transition-colors">Săptămână</button>
-                                    <button className="px-4 py-1 text-sm rounded-md text-slate-400 hover:text-white transition-colors">Lună</button>
-                                </div>
-                            </div>
-
-                            {/* Styled Timeline Grid (Simplified representation) */}
-                            <div className="relative h-64 border-l border-slate-800 ml-4 flex flex-col justify-between py-4">
-                                <div className="absolute top-0 left-0 w-full h-full flex flex-col justify-between opacity-20 pointer-events-none">
-                                    {[...Array(5)].map((_, i) => <div key={i} className="w-full border-b border-slate-700 h-0"></div>)}
-                                </div>
-
-                                {/* Class Cards */}
-                                <div className="relative h-full w-full ml-4">
-                                    {/* Card Matematică */}
-                                    <div className="absolute top-[0%] left-0 w-3/4 md:w-1/2 p-3 rounded-xl border border-orange-500/30 bg-gradient-to-r from-orange-500/20 to-transparent">
-                                        <div className="w-1 h-full bg-orange-500 absolute left-0 top-0 rounded-l-xl"></div>
-                                        <p className="font-bold text-white text-sm">Matematică</p>
-                                        <p className="text-xs text-orange-300/80">10:00</p>
-                                    </div>
-
-                                    {/* Card Română */}
-                                    <div className="absolute top-[30%] left-[10%] w-3/4 md:w-1/2 p-3 rounded-xl border border-blue-500/30 bg-gradient-to-r from-blue-500/20 to-transparent">
-                                        <div className="w-1 h-full bg-blue-500 absolute left-0 top-0 rounded-l-xl"></div>
-                                        <p className="font-bold text-white text-sm">Română</p>
-                                        <p className="text-xs text-blue-300/80">11:30</p>
-                                    </div>
-
-                                    {/* Card Engleză */}
-                                    <div className="absolute top-[70%] left-0 w-1/3 p-3 rounded-xl border border-rose-500/30 bg-gradient-to-r from-rose-500/20 to-transparent">
-                                        <div className="w-1 h-full bg-rose-500 absolute left-0 top-0 rounded-l-xl"></div>
-                                        <p className="font-bold text-white text-sm">Engleză</p>
-                                        <p className="text-xs text-rose-300/80">13:00</p>
-                                    </div>
-
-                                    {/* Card Evaluare */}
-                                    <div className="absolute top-[80%] right-[10%] w-1/3 p-3 rounded-xl border border-emerald-500/30 bg-gradient-to-r from-emerald-500/20 to-transparent">
-                                        <div className="w-1 h-full bg-emerald-500 absolute left-0 top-0 rounded-l-xl"></div>
-                                        <p className="font-bold text-white text-sm">Evaluare</p>
-                                        <p className="text-xs text-emerald-300/80">17:00</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                    {/* Piețele (Markets) cu un look mai "tehnic" */}
+                    <div className="mt-20 flex items-center justify-center gap-4 sm:gap-8 text-slate-400 font-medium tracking-widest uppercase text-sm border-t border-slate-800/50 pt-8 w-full max-w-md mx-auto">
+                        <span className="flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse" /> INDICES</span>
+                        <span className="hidden sm:block text-slate-700">|</span>
+                        <span className="flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse delay-75" /> FOREX</span>
+                        <span className="hidden sm:block text-slate-700">|</span>
+                        <span className="flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-pulse delay-150" /> CRYPTO</span>
                     </div>
+                </section>
 
-                    {/* Coloana Dreapta (Progres + Recenzii) */}
-                    <div className="space-y-6">
+                {/* --- Features Grid Section --- */}
+                <section className="py-20 relative z-20">
+                    {/* O linie subtilă de demarcație */}
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-3xl h-[1px] bg-gradient-to-r from-transparent via-orange-500/50 to-transparent"></div>
 
-                        {/* Progres Profil Circular */}
-                        <div className="bg-[#0A101C] border border-slate-800/60 rounded-2xl p-6 flex flex-col items-center justify-center relative overflow-hidden">
-                            {/* Ambient Glow */}
-                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-cyan-500/20 blur-[60px] pointer-events-none" />
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-10">
 
-                            <div className="w-full flex justify-between items-center mb-4">
-                                <h2 className="text-lg font-bold text-white z-10">Progres Profil</h2>
-                            </div>
+                        {/* Card 1 (Highlighted) */}
+                        <div className="p-8 rounded-3xl bg-[#0A101C]/70 backdrop-blur-md border border-orange-500/40 shadow-[0_0_40px_rgba(234,88,12,0.1)] relative overflow-hidden group transition-all hover:-translate-y-2 hover:shadow-[0_0_60px_rgba(234,88,12,0.2)]">
+                            <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-                            <div className="relative w-40 h-40 flex items-center justify-center z-10">
-                                {/* SVG Circle Background */}
-                                <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                                    <circle cx="50" cy="50" r="40" stroke="#1E293B" strokeWidth="8" fill="none" />
-                                    {/* SVG Circle Progress (85% of 251 circumference = ~213) */}
-                                    <circle
-                                        cx="50" cy="50" r="40"
-                                        stroke="url(#gradient)"
-                                        strokeWidth="8"
-                                        fill="none"
-                                        strokeLinecap="round"
-                                        strokeDasharray="251"
-                                        strokeDashoffset="38"
-                                        className="drop-shadow-[0_0_8px_rgba(34,211,238,0.8)]"
-                                    />
-                                    <defs>
-                                        <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                            <stop offset="0%" stopColor="#00F0FF" />
-                                            <stop offset="100%" stopColor="#A855F7" />
-                                        </linearGradient>
-                                    </defs>
-                                </svg>
-                                <div className="absolute flex flex-col items-center justify-center">
-                                    <span className="text-4xl font-bold text-white">85%</span>
+                            {/* Icon Glow */}
+                            <div className="relative w-14 h-14 mb-8">
+                                <div className="absolute inset-0 bg-orange-600/30 blur-[20px] rounded-full" />
+                                <div className="relative w-full h-full bg-gradient-to-br from-orange-950 to-[#0A101C] rounded-2xl flex items-center justify-center border border-orange-500/30">
+                                    <Target className="w-7 h-7 text-orange-400" />
                                 </div>
                             </div>
+
+                            <h3 className="text-2xl font-bold text-white mb-4">Trade Mentor AI</h3>
+                            <p className="text-slate-300 leading-relaxed">
+                                Get instant feedback on your hidden flaws—like a high win rate but a terrible Risk:Reward. Fix your math and stop bleeding capital.
+                            </p>
                         </div>
 
-                        {/* Recenzii */}
-                        <div className="bg-[#0A101C] border border-slate-800/60 rounded-2xl p-6">
-                            <div className="flex justify-between items-center mb-6">
-                                <h2 className="text-lg font-bold text-white">Recenzii</h2>
-                                <button className="text-slate-400 hover:text-white"><MoreHorizontal size={20} /></button>
-                            </div>
-
-                            <div className="flex items-end gap-2 mb-6 border-b border-slate-800/80 pb-6">
-                                <span className="text-5xl font-bold text-yellow-400 drop-shadow-[0_0_10px_rgba(250,204,21,0.3)]">4.9</span>
-                                <div className="mb-1">
-                                    <Star className="w-6 h-6 text-yellow-400 fill-yellow-400" />
-                                </div>
-                                <span className="text-slate-400 mb-1 ml-1">(127)</span>
-                            </div>
-
-                            <div className="space-y-5">
-                                {/* Review 1 */}
-                                <div className="flex gap-4">
-                                    <div className="w-10 h-10 rounded-full overflow-hidden shrink-0 border border-slate-700">
-                                        <img src="https://i.pravatar.cc/150?img=5" alt="Andreea" />
-                                    </div>
-                                    <div>
-                                        <h4 className="font-semibold text-white text-sm">Andreea M.</h4>
-                                        <div className="flex gap-1 mt-1">
-                                            {[1, 2, 3, 4, 5].map(i => <Star key={i} className="w-3.5 h-3.5 text-yellow-500 fill-yellow-500" />)}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Review 2 */}
-                                <div className="flex gap-4">
-                                    <div className="w-10 h-10 rounded-full overflow-hidden shrink-0 border border-slate-700">
-                                        <img src="https://i.pravatar.cc/150?img=11" alt="Vlad" />
-                                    </div>
-                                    <div>
-                                        <h4 className="font-semibold text-white text-sm">Vlad S.</h4>
-                                        <div className="flex gap-1 mt-1 mb-1.5">
-                                            {[1, 2, 3, 4, 5].map(i => <Star key={i} className="w-3.5 h-3.5 text-yellow-500 fill-yellow-500" />)}
-                                        </div>
-                                        <p className="text-sm text-slate-400">Recomand!</p>
-                                    </div>
+                        {/* Card 2 */}
+                        <div className="p-8 rounded-3xl bg-[#0A101C]/40 backdrop-blur-md border border-slate-800/60 hover:border-pink-500/40 transition-all hover:-translate-y-1 hover:bg-[#0A101C]/60 group">
+                            <div className="relative w-14 h-14 mb-8">
+                                <div className="absolute inset-0 bg-pink-600/20 blur-[20px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
+                                <div className="relative w-full h-full bg-[#0A101C] rounded-2xl flex items-center justify-center border border-slate-700 group-hover:border-pink-500/30 transition-colors">
+                                    <Brain className="w-7 h-7 text-pink-500" />
                                 </div>
                             </div>
+                            <h3 className="text-2xl font-bold text-white mb-4">Strategy Edge</h3>
+                            <p className="text-slate-400 leading-relaxed">
+                                Track performance and compare setups side-by-side. Uncover exactly which strategy prints money and which is draining your account.
+                            </p>
+                        </div>
 
+                        {/* Card 3 */}
+                        <div className="p-8 rounded-3xl bg-[#0A101C]/40 backdrop-blur-md border border-slate-800/60 hover:border-cyan-500/40 transition-all hover:-translate-y-1 hover:bg-[#0A101C]/60 group">
+                            <div className="relative w-14 h-14 mb-8">
+                                <div className="absolute inset-0 bg-cyan-600/20 blur-[20px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
+                                <div className="relative w-full h-full bg-[#0A101C] rounded-2xl flex items-center justify-center border border-slate-700 group-hover:border-cyan-500/30 transition-colors">
+                                    <BarChart3 className="w-7 h-7 text-cyan-500" />
+                                </div>
+                            </div>
+                            <h3 className="text-2xl font-bold text-white mb-4">Smart Statistics</h3>
+                            <p className="text-slate-400 leading-relaxed">
+                                Go beyond basic P&L. Get institutional-grade clarity with advanced metrics like Profit Factor, Sharpe Ratio, and Expectancy.
+                            </p>
                         </div>
 
                     </div>
-                </div>
+                </section>
+                {/* Spațiu extra jos pentru a vedea fundalul */}
+                <div className="h-40"></div>
             </main>
         </div>
-    );
-}
-
-// Sub-componentă simplă pentru itemii din meniul lateral
-function NavItem({ icon, label, active = false }: { icon: React.ReactNode, label: string, active?: boolean }) {
-    return (
-        <a href="#" className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 ${active
-                ? 'bg-slate-800/50 text-cyan-400 border border-slate-700/50 shadow-[inset_0_0_20px_rgba(34,211,238,0.05)]'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/30'
-            }`}>
-            {icon}
-            <span className="font-medium text-sm">{label}</span>
-        </a>
     );
 }
