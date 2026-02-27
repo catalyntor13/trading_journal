@@ -3,6 +3,8 @@
 import { AuthCard } from "@/components/authentication/auth-card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { authClient } from "@/lib/auth-client";
+import { LoaderCircle } from "lucide-react";
 // Am importat si User pentru iconita de la nume
 import { FaGoogle } from "react-icons/fa";
 import { useForm } from 'react-hook-form';
@@ -22,15 +24,16 @@ export default function RegisterPage() {
 
   // 1. Definim schema de validare Zod
   const RegisterSchema = z.object({
-    name: z.string().min(2, { message: 'Numele este obligatoriu (min. 2 caractere)' }),
-    email: z.string().email({ message: 'Te rugăm să introduci un email valid' }),
-    password: z.string().min(6, { message: 'Parola must have 6 caracters' }),
+    name: z.string().min(2, { message: 'Name is required, min 2 characters' }),
+    email: z.string().email({ message: 'Email is required' }),
+    password: z.string().min(6, { message: 'Password is required, min 6 characters' }),
   });
 
   // 2. Extragem tipul de date din schema
 
   type RegisterSchemaData = z.infer<typeof RegisterSchema>;
 
+  // 3. Inițializăm formularul
   const {
     register,
     handleSubmit,
@@ -44,10 +47,7 @@ export default function RegisterPage() {
     },
   });
 
-
-
-
-
+  // 4. Funcția de submit
   const onSubmit = async (data: RegisterSchemaData) => {
     setIsLoading(true);
 
@@ -56,16 +56,17 @@ export default function RegisterPage() {
       email: data.email,
       password: data.password,
       name: data.name,
+      callbackURL: "/login?verified=true"
     }, {
       onRequest: () => {
 
       },
       onSuccess: () => {
-        toast.success("Cont creat cu succes!");
-
+        toast.success("Account created successfully, check your email to verify your account!");
+        setIsLoading(false);
       },
       onError: (ctx) => {
-        toast.error(ctx.error.message || "A apărut o eroare.");
+        toast.error(ctx.error.message || "An error occurred.");
         setIsLoading(false);
       }
     });
@@ -73,17 +74,24 @@ export default function RegisterPage() {
   }
 
 
+  const handleGoogleSignIn = async () => {
+    await authClient.signIn.social({
+      provider: "google",
+      callbackURL: "/dashboard",
+    });
+  }
+
   return (
     <AuthCard
 
-      subtitle="Start building your SaaS in minutes"
+      subtitle="Create your account"
       footerText="Already have an account?"
       footerActionText="Sign In"
       footerActionHref="/login" // Aici facem legătura inversă către Login
     >
       <div className="space-y-4">
         {/* Butonul de GitHub rămâne (poate fi folosit și la sign up) */}
-        <button className="w-full h-11 bg-slate-900 border border-slate-800 hover:bg-slate-800 hover:border-slate-700 text-white rounded-xl flex items-center justify-center gap-3 transition-all font-medium text-sm">
+        <button onClick={handleGoogleSignIn} className="w-full h-11 bg-slate-900 border border-slate-800 hover:bg-slate-800 hover:border-slate-700 text-white rounded-xl flex items-center justify-center gap-3 transition-all font-medium text-sm">
           <FaGoogle className="w-5 h-5 cursor-pointer" /> Sign up with Google
         </button>
 
@@ -96,6 +104,8 @@ export default function RegisterPage() {
           </div>
         </div>
 
+
+        {/* Formularul cu Inputuri */}
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {/* Câmp nou pentru Nume Complet */}
           <div className="space-y-1">
@@ -139,7 +149,7 @@ export default function RegisterPage() {
           </div>
 
           <Button type="submit" disabled={isLoading} variant="default" className="w-full h-12 shadow-violet-500/25 bg-orange-600 hover:bg-orange-700 text-white cursor-pointer">
-            {isLoading ? "Se încarcă..." : "Create Account"}
+            {isLoading ? <LoaderCircle className="w-5 h-5 animate-spin" /> : "Create Account"}
           </Button>
         </form>
       </div>

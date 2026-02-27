@@ -1,7 +1,7 @@
 "use client"
 
 import { format } from "date-fns"
-import { MoreHorizontal, Pencil, Trash2, Eye } from "lucide-react"
+import { MoreHorizontal, Pencil, Trash2, Eye, ArrowUpRight, ArrowDownRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
@@ -158,112 +158,183 @@ export function TradesTable({
 
 
             <div className="p-6 border-b border-border flex justify-between items-center">
-                <h2 className="text-lg font-semibold text-foreground">Trade History</h2>
+                <h2 className="text-xl font-bold text-foreground">Trade History</h2>
             </div>
 
-            <div className="relative w-full overflow-auto">
-                <Table>
-                    <TableHeader className="bg-muted/50">
-                        <TableRow className="border-border hover:bg-muted/50">
-                            <TableHead className="text-muted-foreground">Date</TableHead>
-                            <TableHead className="text-muted-foreground">Pair</TableHead>
-                            <TableHead className="text-muted-foreground">Strategy</TableHead>
-                            <TableHead className="text-muted-foreground">Buy/Sell</TableHead>
-                            <TableHead className="text-right text-muted-foreground">Net Profit</TableHead>
-                            <TableHead className="text-right text-muted-foreground">Commission</TableHead>
-                            <TableHead className="text-right text-muted-foreground">Risk %</TableHead>
-                            <TableHead className="text-center text-muted-foreground">TOD</TableHead>
-                            <TableHead className="text-right text-muted-foreground">RR</TableHead>
-                            <TableHead className="text-center text-muted-foreground">Actions</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {trades.length === 0 ? (
-                            <TableRow>
-                                <TableCell colSpan={10} className="text-center py-8 text-muted-foreground">
-                                    No trades logged yet. Click "Add Trade" to start.
-                                </TableCell>
-                            </TableRow>
-                        ) : (
-                            trades.map((trade) => {
+            {/* SHARED ACTIONS COMPONENT */}
+            {(() => {
+                const renderActions = (trade: any, hideEyeOnMobile = false) => (
+                    <div className="flex justify-end gap-1">
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => setViewTrade(trade)}
+                            className={cn("h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted", hideEyeOnMobile && "hidden md:inline-flex")}
+                        >
+                            <Eye className="w-4 h-4" />
+                        </Button>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-muted text-muted-foreground">
+                                    <span className="sr-only">Open menu</span>
+                                    <MoreHorizontal className="w-4 h-4" />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="bg-popover border-border text-popover-foreground shadow-xl">
+                                <DropdownMenuItem
+                                    onClick={() => setEditTrade(trade)}
+                                    className="hover:bg-muted cursor-pointer font-medium"
+                                >
+                                    <Pencil className="mr-2 h-4 w-4 text-blue-500" /> Edit
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator className="bg-border" />
+                                <DropdownMenuItem
+                                    onClick={async () => {
+                                        if (confirm("Delete trade?")) {
+                                            await deleteTrade(trade.id, accountId)
+                                        }
+                                    }}
+                                    className="text-destructive hover:bg-destructive/10 hover:text-destructive cursor-pointer font-medium"
+                                >
+                                    <Trash2 className="mr-2 h-4 w-4" /> Delete
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </div>
+                )
+
+                if (trades.length === 0) {
+                    return (
+                        <div className="text-center py-16 text-muted-foreground">
+                            <p className="text-lg font-medium text-foreground mb-1">No trades logged yet</p>
+                            <p className="text-sm">Click "Add Trade" to start tracking your performance.</p>
+                        </div>
+                    )
+                }
+
+                return (
+                    <>
+                        {/* --- MOBILE VIEW (CARDS) --- */}
+                        <div className="block md:hidden flex flex-col divide-y divide-border">
+                            {trades.map((trade) => {
                                 const profit = parseFloat(trade.profit) || 0
                                 const commission = parseFloat(trade.commission) || 0
                                 const netProfit = profit - commission
 
                                 return (
-                                    <TableRow key={trade.id} className="border-border hover:bg-muted/50 transition-colors">
-                                        <TableCell className="font-medium text-foreground">
-                                            {format(new Date(trade.createdAt), "d MMM")}
-                                        </TableCell>
-                                        <TableCell className="text-muted-foreground">{trade.pair}</TableCell>
-                                        <TableCell className="text-muted-foreground">
-                                            <span className="bg-muted px-2 py-1 rounded text-xs font-medium border border-border text-foreground">
-                                                {trade.strategy}
-                                            </span>
-                                        </TableCell>
-                                        <TableCell>
-                                            <span className={`px-2 py-1 rounded text-xs font-bold ${trade.direction === 'Buy'
-                                                ? 'bg-emerald-500/10 text-emerald-400'
-                                                : 'bg-red-500/10 text-red-400'
-                                                }`}>
-                                                {trade.direction}
-                                            </span>
-                                        </TableCell>
-                                        <TableCell className={`text-right font-mono ${netProfit > 0 ? 'text-emerald-500' : netProfit < 0 ? 'text-red-500' : 'text-muted-foreground'}`}>
-                                            {netProfit < 0 ? "-" : ""}{Math.abs(netProfit).toFixed(2)}$
-                                        </TableCell>
-                                        <TableCell className="text-right text-red-500 font-mono">-{commission.toFixed(2)}$</TableCell>
-                                        <TableCell className="text-right text-muted-foreground font-mono">{trade.riskPercent}%</TableCell>
-                                        <TableCell className="text-center text-muted-foreground">{trade.tod}</TableCell>
-                                        <TableCell className={`text-right font-mono ${trade.riskRatio?.includes("-") ? 'text-red-500' : trade.riskRatio === 'BE' ? 'text-muted-foreground' : 'text-emerald-500'}`}>
-                                            {trade.riskRatio}
-                                        </TableCell>
-                                        <TableCell className="text-center">
-                                            <div className="flex justify-center gap-1">
-                                                <Button
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    onClick={() => setViewTrade(trade)}
-                                                    className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted"
-                                                >
-                                                    <Eye className="w-4 h-4" />
-                                                </Button>
-                                                <DropdownMenu>
-                                                    <DropdownMenuTrigger asChild>
-                                                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-muted text-muted-foreground">
-                                                            <span className="sr-only">Open menu</span>
-                                                            <MoreHorizontal className="w-4 h-4" />
-                                                        </Button>
-                                                    </DropdownMenuTrigger>
-                                                    <DropdownMenuContent align="end" className="bg-popover border-border text-popover-foreground">
-                                                        <DropdownMenuItem
-                                                            onClick={() => setEditTrade(trade)}
-                                                            className="hover:bg-muted cursor-pointer"
-                                                        >
-                                                            <Pencil className="mr-2 h-4 w-4" /> Edit
-                                                        </DropdownMenuItem>
-                                                        <DropdownMenuSeparator className="bg-border" />
-                                                        <DropdownMenuItem
-                                                            onClick={async () => {
-                                                                if (confirm("Delete trade?")) {
-                                                                    await deleteTrade(trade.id, accountId)
-                                                                }
-                                                            }}
-                                                            className="text-destructive hover:bg-muted hover:text-destructive cursor-pointer"
-                                                        >
-                                                            <Trash2 className="mr-2 h-4 w-4" /> Delete
-                                                        </DropdownMenuItem>
-                                                    </DropdownMenuContent>
-                                                </DropdownMenu>
+                                    <div key={trade.id} className="p-4 space-y-4 hover:bg-muted/50 transition-colors">
+                                        <div className="flex justify-between items-start">
+                                            <div>
+                                                <div className="flex items-center gap-3 mb-1">
+                                                    <span className="font-bold text-foreground text-xl">{trade.pair}</span>
+                                                    <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${trade.direction === 'Buy' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-red-500/10 text-red-500'}`}>
+                                                        {trade.direction}
+                                                    </span>
+                                                </div>
+                                                <p className="text-[13px] text-muted-foreground">{format(new Date(trade.createdAt), "MMM d")} • {trade.tod}</p>
                                             </div>
-                                        </TableCell>
-                                    </TableRow>
+                                            <div className="text-right flex items-start gap-1">
+                                                <div className="flex flex-col items-end">
+                                                    <div className={`text-xl tracking-tight font-bold flex items-center justify-end gap-1 ${netProfit >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
+                                                        {netProfit >= 0 ? <ArrowUpRight className="h-5 w-5" /> : <ArrowDownRight className="h-5 w-5" />}
+                                                        {Math.abs(netProfit).toFixed(2)}$
+                                                    </div>
+                                                    <div className="text-[13px] text-muted-foreground mt-0.5">Comm: -{commission.toFixed(2)}$</div>
+                                                </div>
+                                                <div className="-mt-1 -mr-2">
+                                                    {renderActions(trade, true)}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="grid grid-cols-2 gap-2 bg-muted/40 p-3 rounded-[16px] border border-border/50">
+                                            <div className="mr-3">
+                                                <div className="text-[13px] tracking-tight text-muted-foreground mb-1.5">Strategy</div>
+                                                <span className="bg-background px-3 py-1.5 rounded-full text-[11px] border border-border text-foreground tracking-wide inline-block">
+                                                    {trade.strategy}
+                                                </span>
+                                            </div>
+                                            <div className="ml-4">
+                                                <div className="text-[13px] tracking-tight text-muted-foreground mb-1.5">Risk / Reward</div>
+                                                <div className="text-[15px] my-auto font-medium text-foreground">
+                                                    {trade.riskPercent}% / <span className={`${trade.riskRatio?.includes("-") ? 'text-red-500' : trade.riskRatio === 'BE' ? 'text-muted-foreground' : 'text-emerald-500'}`}>{trade.riskRatio}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex items-center justify-end pt-2 border-t border-border/50">
+                                            <Button variant="ghost" className="text-muted-foreground hover:text-foreground h-9" onClick={() => setViewTrade(trade)}>
+                                                See details <Eye className="ml-2 h-4 w-4" />
+                                            </Button>
+                                        </div>
+                                    </div>
                                 )
-                            })
-                        )}
-                    </TableBody>
-                </Table>
-            </div>
+                            })}
+                        </div>
+
+                        {/* --- DESKTOP VIEW (TABLE) --- */}
+                        <div className="hidden md:block w-full overflow-auto">
+                            <Table>
+                                <TableHeader className="bg-muted/30">
+                                    <TableRow className="border-border hover:bg-transparent">
+                                        <TableHead className="text-muted-foreground font-semibold h-12">Date</TableHead>
+                                        <TableHead className="text-muted-foreground font-semibold h-12">Pair</TableHead>
+                                        <TableHead className="text-muted-foreground font-semibold h-12">Strategy</TableHead>
+                                        <TableHead className="text-muted-foreground font-semibold h-12">Dir</TableHead>
+                                        <TableHead className="text-right text-muted-foreground font-semibold h-12">Net Profit</TableHead>
+                                        <TableHead className="text-right text-muted-foreground font-semibold h-12">Comm.</TableHead>
+                                        <TableHead className="text-right text-muted-foreground font-semibold h-12">Risk %</TableHead>
+                                        <TableHead className="text-center text-muted-foreground font-semibold h-12">TOD</TableHead>
+                                        <TableHead className="text-right text-muted-foreground font-semibold h-12">RR</TableHead>
+                                        <TableHead className="text-right text-muted-foreground font-semibold h-12 pr-6">Activity</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {trades.map((trade) => {
+                                        const profit = parseFloat(trade.profit) || 0
+                                        const commission = parseFloat(trade.commission) || 0
+                                        const netProfit = profit - commission
+
+                                        return (
+                                            <TableRow key={trade.id} className="border-border hover:bg-muted/40 transition-colors h-14">
+                                                <TableCell className="font-medium text-foreground whitespace-nowrap">
+                                                    {format(new Date(trade.createdAt), "MMM d")}
+                                                </TableCell>
+                                                <TableCell className="font-bold text-foreground">{trade.pair}</TableCell>
+                                                <TableCell>
+                                                    <span className="bg-muted px-2.5 py-1 rounded-md text-xs font-medium border border-border text-foreground tracking-wide">
+                                                        {trade.strategy}
+                                                    </span>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${trade.direction === 'Buy'
+                                                        ? 'bg-emerald-500/10 text-emerald-500'
+                                                        : 'bg-red-500/10 text-red-500'
+                                                        }`}>
+                                                        {trade.direction}
+                                                    </span>
+                                                </TableCell>
+                                                <TableCell className={`text-right font-mono font-bold ${netProfit > 0 ? 'text-emerald-500' : netProfit < 0 ? 'text-red-500' : 'text-muted-foreground'}`}>
+                                                    {netProfit < 0 ? "-" : ""}{Math.abs(netProfit).toFixed(2)}$
+                                                </TableCell>
+                                                <TableCell className="text-right text-red-500/80 font-mono text-sm">-{commission.toFixed(2)}$</TableCell>
+                                                <TableCell className="text-right text-muted-foreground font-mono text-sm">{trade.riskPercent}%</TableCell>
+                                                <TableCell className="text-center text-muted-foreground text-sm font-medium">{trade.tod}</TableCell>
+                                                <TableCell className={`text-right font-mono font-bold ${trade.riskRatio?.includes("-") ? 'text-red-500' : trade.riskRatio === 'BE' ? 'text-muted-foreground' : 'text-emerald-500'}`}>
+                                                    {trade.riskRatio}
+                                                </TableCell>
+                                                <TableCell className="text-right pr-4">
+                                                    {renderActions(trade)}
+                                                </TableCell>
+                                            </TableRow>
+                                        )
+                                    })}
+                                </TableBody>
+                            </Table>
+                        </div>
+                    </>
+                )
+            })()}
 
             {/* Pagination Controls */}
             {

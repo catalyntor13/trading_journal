@@ -14,14 +14,14 @@ import { Loader2Icon, Mail } from "lucide-react";
 
 // Schema și Type 
 const ResetSchema = z.object({
-  email: z.string().email("Email invalid"),
+    email: z.string().email("Email invalid"),
 });
 
 type ResetSchemaData = z.infer<typeof ResetSchema>;
 
 export default function ForgotPasswordPage() {
     const [isLoading, setIsLoading] = useState(false);
-    
+
     const {
         register,
         handleSubmit,
@@ -30,9 +30,9 @@ export default function ForgotPasswordPage() {
         resolver: zodResolver(ResetSchema),
         defaultValues: { email: "" },
     });
-    
-    // 💡 Funcția de Submit Corectă
-    const onSubmit = async(data: ResetSchemaData) => {
+
+    // 💡 Funcția de Submit Corecăt
+    const onSubmit = async (data: ResetSchemaData) => {
         setIsLoading(true);
 
         try {
@@ -40,13 +40,14 @@ export default function ForgotPasswordPage() {
             // 💡 2. Trimitem email-ul din formular: data.email
             await authClient.requestPasswordReset({
                 email: data.email,
+                redirectTo: "/reset-password",
             }, {
                 onSuccess: () => {
-                    toast.success("Linkul de resetare a fost trimis pe email!", { duration: 5000 });
+                    toast.success("Email sent successfully, check your inbox!", { duration: 5000 });
                 },
                 onError: (ctx) => {
                     // Afișăm eroarea primită de la server
-                    toast.error(ctx.error.message || "A apărut o eroare necunoscută.");
+                    toast.error(ctx.error.message || "An error occurred.");
                 },
             });
         } catch (error) {
@@ -56,25 +57,25 @@ export default function ForgotPasswordPage() {
             setIsLoading(false);
         }
     }
-    
+
     return (
         <div className="w-full max-w-md relative animate-in zoom-in-95 duration-300">
-        
-            
+
+
             <div className="bg-slate-950/70 backdrop-blur-xl border border-white/10 p-8 rounded-3xl shadow-2xl">
                 <div className="text-center mb-8">
                     {/* ... Textul ... */}
                     <h2 className="text-2xl font-bold text-white mb-2">Forgot Password</h2>
-                    <p className="text-slate-400 text-sm">Did you lost your password ?</p>
+                    <p className="text-slate-400 text-sm">Enter your email address and we'll send you a link to reset it.</p>
                 </div>
 
                 {/* 💡 SINTAXA CORECTĂ: handleSubmit(onSubmit) pe tag-ul form */}
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4"> 
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
 
                     {/* Input Email */}
-                    <Input 
+                    <Input
                         className="text-slate-200"
-                        type="email" 
+                        type="email"
                         placeholder="Enter your email"
                         disabled={isLoading}
                         {...register('email')}
@@ -83,17 +84,17 @@ export default function ForgotPasswordPage() {
                     {errors.email?.message && (
                         <p className="text-red-400 text-xs mt-1">{errors.email.message}</p>
                     )}
-                    
+
                     {/* Butonul de Submit */}
                     {/* 💡 Nu mai avem nevoie de onClick=onSubmit aici, e preluat de form */}
-                    <Button 
+                    <Button
                         type="submit" // Tipul trebuie să fie 'submit'
-                        variant='destructive' 
+                        variant='destructive'
                         disabled={isLoading}
                         className="cursor-pointer mx-auto w-full flex items-center justify-center gap-2"
                     >
                         <Mail className="w-4 h-4" />
-                        {isLoading ? <Loader2Icon className="animate-spin"/> : "Send Password"}
+                        {isLoading ? <Loader2Icon className="animate-spin" /> : "Send Password"}
                     </Button>
                 </form>
             </div>

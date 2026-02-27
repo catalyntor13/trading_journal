@@ -5,26 +5,26 @@ const HowWorks = () => {
   const steps = [
     {
       number: "01",
-      title: "Sync Your Mission",
-      desc: "Conectează-ți contul sau setează-ți parametrii de risc. Definește-ți strategiile SMC preferate pentru a le avea pregătite de journaling.",
+      title: "Sync Your Account",
+      desc: "Add your account and your strategy to have them ready for journaling.",
       icon: "📡"
     },
     {
       number: "02",
       title: "Precision Logging",
-      desc: "După fiecare trade, bifează tag-urile de lichiditate (BOS, CHoCH, FVG) și starea emoțională. Durează sub 30 de secunde.",
+      desc: "Note your trades, your emotional level, session, market conditions, and more.",
       icon: "✍️"
     },
     {
       number: "03",
       title: "Data Analysis",
-      desc: "Motorul nostru procesează datele și îți arată unde pierzi bani: e vorba de setup-ul tehnic sau de psihologia ta?",
+      desc: "Our Trade Mentor processes the data and shows you where you're losing money: is it the technical setup or your psychology?",
       icon: "🔍"
     },
     {
       number: "04",
       title: "Scale to Orbit",
-      desc: "Elimină erorile repetitive și concentrează-te pe setup-urile cu win-rate mare. Urmărește-ți curba de equity cum crește constant.",
+      desc: "Eliminate repetitive errors and focus on high win-rate setups. Watch your equity curve grow consistently.",
       icon: "📈"
     }
   ];
@@ -37,7 +37,7 @@ const HowWorks = () => {
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-20">
           <h2 className="text-orange-500 font-bold tracking-[0.3em] uppercase text-xs mb-4">The Protocol</h2>
-          <h3 className="text-4xl md:text-5xl font-extrabold text-white">How Mars Works</h3>
+          <h3 className="text-4xl md:text-5xl font-extrabold text-white">How Mars Journal Works</h3>
         </div>
 
         <div className="relative">
@@ -69,10 +69,10 @@ const HowWorks = () => {
         {/* Call to Action for Steps */}
         <div className="mt-20 flex justify-center">
           <div className="p-1 rounded-full bg-gradient-to-r from-orange-500/20 to-transparent">
-             <button className="px-8 py-3 bg-slate-950 text-white rounded-full border border-orange-500/30 hover:border-orange-500 transition-all flex items-center gap-3 group">
-               Start Your First Mission 
-               <span className="group-hover:translate-x-1 transition-transform">→</span>
-             </button>
+            <button className="px-8 py-3 bg-slate-950 text-white rounded-full border border-orange-500/30 hover:border-orange-500 transition-all flex items-center gap-3 group">
+              Start Your Journal Now
+              <span className="group-hover:translate-x-1 transition-transform">→</span>
+            </button>
           </div>
         </div>
       </div>

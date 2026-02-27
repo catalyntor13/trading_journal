@@ -14,21 +14,23 @@ import { z } from "zod";
 import toast from "react-hot-toast";
 import Link from "next/link";
 
-import { Suspense } from 'react';
-
 // 1. Definim schema simplă pentru Login
 const LoginSchema = z.object({
   email: z.string().email({ message: "Email invalid" }),
   password: z.string().min(1, { message: "Introdu parola" }),
 });
 
+// 2. Extragem tipul de date din schema
 type LoginSchemaData = z.infer<typeof LoginSchema>;
 
-function LoginContent() {
+// 3. Funcția de submit
+export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter();
 
   const searchParams = useSearchParams();
+  const isVerified = searchParams.get('verified');
+  const hasNotVerifiedEmail = searchParams.get('error');
   const hasAccessError = searchParams.get('error'); // Citim parametrul error cel din login?error=unauthorized
   const hasMessage = searchParams.get('message');
   const hasAnyQuery = searchParams.toString().length > 0 // Verifică dacă există ORICE parametru
@@ -48,14 +50,22 @@ function LoginContent() {
       return
     }
     // 3. Gestionarea mesajelor din URL
-    if (hasAccessError === 'unauthorized') {
+
+    if (isVerified === 'true') {
+      toast.success('Your account has been verified! You can now log in.');
+      router.replace('/login'); // Ștergem parametrul din URL să fie curat
+    } else if (hasNotVerifiedEmail === 'EMAIL_NOT_VERIFIED') {
+      toast.error('Email not verified. Please verify your email.');
+
+    } else if (hasAccessError === 'unauthorized') {
       toast.error('Access Denied. Please log in')
       router.replace('/login');
+
+
     } else if (hasMessage === 'logged-out') {
       toast.success('You have been logged out successfully');
       router.replace('/login');
-    }
-    else if (hasAnyQuery && !hasAccessError && !hasMessage) {
+    } else if (hasAnyQuery && !hasAccessError && !hasMessage) {
       toast.error('An unknown parameter');
       router.replace('/login')
     }
@@ -87,10 +97,13 @@ function LoginContent() {
         router.push("/dashboard");
       },
       onError: (ctx) => {
-        // BetterAuth generally responds with standard error messages like "Invalid email or password"
-        // But if it replies with something generic like "Access Denied" or "Unauthorized",
-        // we override it to be strictly helpful to the user about their credentials.
-        toast.error("Invalid email or password. Please try again.");
+        if (ctx.error.status === 403) {
+          toast.error("Please verify your email address.");
+        }
+        if (ctx.error.status === 401) {
+          toast.error("Invalid email or password. Please try again.");
+        }
+
         setIsLoading(false);
       }
     });
@@ -157,10 +170,4 @@ function LoginContent() {
   );
 }
 
-export default function LoginPage() {
-  return (
-    <Suspense fallback={<div>Loading authentication...</div>}>
-      <LoginContent />
-    </Suspense>
-  )
-}
+

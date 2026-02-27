@@ -1,5 +1,6 @@
 "use client"
 
+import Link from 'next/link'
 
 const Hero = () => {
   return (
@@ -19,24 +20,24 @@ const Hero = () => {
             </span>
           </div>
 
-          <h1 className="text-6xl md:text-8xl font-extrabold text-white mb-6 leading-[1.1] tracking-tight">
-            Trade with
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-red-600 ml-2">
-              Precision
-            </span>
-          </h1>
+
+          <div className="flex">
+            <h1 className="text-4xl lg:text-7xl font-extrabold text-white mb-6 leading-[1.1] tracking-tight">Trade with</h1>
+            <span className="text-4xl lg:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-red-600 ml-2">Precision</span>
+          </div>
+
 
           <p className="text-lg md:text-xl text-slate-400 mb-10 max-w-2xl leading-relaxed">
             Master your execution with a journal built for clarity. Track your trades, visualize your account statistics, and continuously improve your strategy through data-backed insights.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-5">
-            <button className="px-10 py-4 bg-white text-slate-950 font-bold rounded-xl hover:bg-orange-500 hover:text-white transition-all duration-300 shadow-xl shadow-white/5">
-              Start Journaling
-            </button>
-            <button className="px-10 py-4 border border-white/10 bg-white/5 backdrop-blur-md text-white font-semibold rounded-xl hover:bg-white/10 transition-colors">
-              Explore Features
-            </button>
+            <Link href="/login">
+              <button className="px-10 cursor-pointer py-4 bg-white text-slate-950 font-bold rounded-xl hover:bg-orange-500 hover:text-white transition-all duration-300 shadow-xl shadow-white/5">
+                Start Journaling
+              </button>
+            </Link>
+
           </div>
 
           <div className="mt-16 flex items-center gap-8 opacity-50 grayscale">

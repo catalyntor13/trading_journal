@@ -5,13 +5,13 @@
 const Features = () => {
 
   const feats = [
-    { title: "SMC Logic", desc: "Tag-uri automate pentru BOS, CHoCH și FVG la fiecare trade.", icon: "🚀" },
-    { title: "Psychology Log", desc: "Monitorizează-ți starea emoțională și elimină Overtrading-ul.", icon: "🧠" },
-    { title: "Smart Statistics", desc: "Calcul instantaneu de R:R, Win Rate și Drawdown.", icon: "📊" },
+    { title: "Trade Mentor", desc: "Get instant feedback on your hidden flaws—like a high win rate but a terrible Risk:Reward—so you can fix your math and stop bleeding capital.", icon: "🎯" },
+    { title: "Strategy Performance", desc: "Track your strategy performance and compare your setups side-by-side to uncover exactly which strategy actually prints money and which one is secretly draining your account.", icon: "🧠" },
+    { title: "Smart Statistics", desc: "See your true stats and go beyond a basic P&L. Get institutional-grade clarity on your true Edge with advanced metrics like Profit Factor, Sharpe Ratio, and Net Profit. Trade with mathematical confidence", icon: "📊" },
   ];
 
   return (
-    <section className="py-24 bg-slate-950 px-6">
+    <section id="features" className="py-24 bg-slate-950 px-6">
       <div className="max-w-7xl mx-auto">
         <div className="grid md:grid-cols-3 gap-8">
           {feats.map((f) => (
@@ -26,8 +26,8 @@ const Features = () => {
     </section>
   );
 
- 
-  
+
+
 }
 
 export default Features

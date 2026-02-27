@@ -1,6 +1,7 @@
 
 
 import { StrategyForm } from "@/components/dashboard/StrategyForm"
+import { DeleteStrategyButton } from "@/components/dashboard/DeleteStrategyButton"
 import { getStrategies } from "@/app/actions/strategies"
 import { Activity } from "lucide-react"
 import Link from "next/link"
@@ -57,27 +58,31 @@ export default async function StrategiesPage(props: {
                                                 </div>
                                             </div>
 
-                                            <div className="flex items-center gap-6 mt-2 md:mt-0 bg-muted/50 p-3 rounded-lg border border-border">
-                                                <div className="text-center px-2">
-                                                    <p className="text-xs text-muted-foreground mb-1">Win Rate</p>
-                                                    <p className={`text-sm font-bold ${strategy.winRate >= 50 ? 'text-emerald-500' : 'text-red-500'}`}>
-                                                        {strategy.winRate}%
-                                                    </p>
+                                            <div className="flex items-center gap-4 mt-2 md:mt-0">
+                                                <div className="flex items-center gap-6 bg-muted/50 p-3 rounded-lg border border-border">
+                                                    <div className="text-center px-2">
+                                                        <p className="text-xs text-muted-foreground mb-1">Win Rate</p>
+                                                        <p className={`text-sm font-bold ${strategy.winRate >= 50 ? 'text-emerald-500' : 'text-red-500'}`}>
+                                                            {strategy.winRate}%
+                                                        </p>
+                                                    </div>
+                                                    <div className="w-px h-8 bg-border"></div>
+                                                    <div className="text-center px-2">
+                                                        <p className="text-xs text-muted-foreground mb-1">Profit</p>
+                                                        <p className={`text-sm font-bold ${strategy.profit >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
+                                                            {formatCurrency(strategy.profit)}
+                                                        </p>
+                                                    </div>
+                                                    <div className="w-px h-8 bg-border"></div>
+                                                    <div className="text-center px-2">
+                                                        <p className="text-xs text-muted-foreground mb-1">Trades</p>
+                                                        <p className="text-sm font-bold text-foreground">
+                                                            {strategy.totalTrades}
+                                                        </p>
+                                                    </div>
                                                 </div>
-                                                <div className="w-px h-8 bg-border"></div>
-                                                <div className="text-center px-2">
-                                                    <p className="text-xs text-muted-foreground mb-1">Profit</p>
-                                                    <p className={`text-sm font-bold ${strategy.profit >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
-                                                        {formatCurrency(strategy.profit)}
-                                                    </p>
-                                                </div>
-                                                <div className="w-px h-8 bg-border"></div>
-                                                <div className="text-center px-2">
-                                                    <p className="text-xs text-muted-foreground mb-1">Trades</p>
-                                                    <p className="text-sm font-bold text-foreground">
-                                                        {strategy.totalTrades}
-                                                    </p>
-                                                </div>
+
+                                                <DeleteStrategyButton id={strategy.id} name={strategy.name} />
                                             </div>
                                         </div>
                                     </div>

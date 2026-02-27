@@ -24,7 +24,7 @@ export default async function AccountDetailsPage({
     const page = Number(pageParam) || 1
 
     const account = await getAccount(id)
-    const { trades, totalCount } = await getTrades(id, page)
+    const { trades, totalCount } = await getTrades(id, page, 6)
     const strategies = await getStrategies()
 
     if (!account) {
@@ -33,7 +33,7 @@ export default async function AccountDetailsPage({
 
     return (
         <section className="p-6 bg-background/50 min-h-full space-y-6">
-            <div className="mb-6 flex justify-between items-end">
+            <div className="mb-6 flex flex-col md:flex-row md:justify-between md:items-end gap-6">
                 <div>
                     <Link href="/accounts" className="text-muted-foreground hover:text-foreground mb-4 flex items-center gap-2 text-sm transition-colors">
                         <ArrowLeft className="w-4 h-4" /> Back to Accounts
@@ -70,7 +70,7 @@ export default async function AccountDetailsPage({
             <TradesTable
                 trades={trades}
                 accountId={id}
-                totalPages={Math.ceil(totalCount / 10)}
+                totalPages={Math.ceil(totalCount / 6)}
                 currentPage={page}
             />
         </section >

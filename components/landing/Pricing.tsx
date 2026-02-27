@@ -2,11 +2,11 @@
 
 
 const Pricing = () => {
- 
+
   return (
-    <section className="py-24 bg-slate-950 relative overflow-hidden">
+    <section id="pricing" className="py-24 bg-slate-950 relative overflow-hidden">
       <div className="absolute top-0 right-0 w-96 h-96 bg-orange-600/10 blur-[120px] rounded-full"></div>
-      
+
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">Missions Plans</h2>

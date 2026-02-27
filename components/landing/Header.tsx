@@ -5,9 +5,9 @@ import Logo from '../myComponents/Logo'
 const Header = () => {
 
   const navItems = [
-    { name: 'Dashboard' },
-    { name: 'Features' },
-    { name: 'Pricing' },
+    { name: 'How it works', href: '#how-it-works' },
+    { name: 'Features', href: '#features' },
+    { name: 'Pricing', href: '#pricing' },
   ]
 
   return (
@@ -20,7 +20,7 @@ const Header = () => {
             <ul className="flex items-center gap-8">
               {navItems.map((item) => (
                 <li key={item.name} className="text-sm cursor-pointer font-medium text-slate-300 hover:text-orange-400 transition-colors">
-                  {item.name}
+                  <Link href={item.href}>{item.name}</Link>
                 </li>
               ))}
             </ul>
@@ -28,7 +28,7 @@ const Header = () => {
 
           <div className="flex items-center gap-4">
             <Link href='/login'>
-              <button className="bg-gradient-to-r cursor-pointer from-orange-500 to-red-600 text-white font-semibold py-2 px-6 rounded-full text-sm hover:shadow-[0_0_20px_rgba(249,115,22,0.4)] transition-all transform hover:scale-105 active:scale-95">Login</button>
+              <button className="bg-gradient-to-r cursor-pointer from-orange-500 to-red-600 text-white font-semibold py-2 px-6 rounded-full text-sm hover:shadow-[0_0_20px_rgba(249,115,22,0.4)] transition-all transform hover:scale-105 active:scale-95">Get Started</button>
             </Link>
 
           </div>
