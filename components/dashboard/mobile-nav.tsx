@@ -32,14 +32,7 @@ export function MobileNav() {
         })
     }
 
-    const asideItems = [
-        { name: "Dashboard", icon: LayoutDashboard, href: '/dashboard' },
-        { name: "Accounts", icon: Users, href: '/accounts' },
-        { name: "Strategies", icon: Target, href: '/strategies' },
-        { name: "Analytics", icon: History, href: '/analytics' },
-        { name: "Settings", icon: Settings, href: '/settings' },
-        { name: "Sign Out", icon: LogOut, href: '#' },
-    ]
+
 
     return (
         <Sheet open={open} onOpenChange={setOpen}>
@@ -58,47 +51,103 @@ export function MobileNav() {
                 <div className="p-4 relative z-10 flex flex-col flex-1 pb-8">
                     <div className="text-xs font-semibold text-slate-500 px-4 mb-2 uppercase tracking-wider">Menu</div>
                     <ul className="space-y-2 flex flex-col">
-                        {asideItems.map((item) => {
-                            if (item.name === "Sign Out") {
-                                return (
-                                    <li key={item.name}>
-                                        <button
-                                            type="button"
-                                            onClick={(e) => {
-                                                e.preventDefault()
-                                                handleSignOut()
-                                            }}
-                                            className="flex gap-3 w-full items-center px-3 py-3 rounded-xl transition-all duration-200 cursor-pointer text-slate-400 hover:text-red-400 hover:bg-red-500/10 group active:bg-red-500/20"
-                                        >
-                                            <item.icon className="transition-colors shrink-0 w-5 h-5 group-hover:text-red-400 text-slate-400" />
-                                            <span className="font-medium text-sm">{item.name}</span>
-                                        </button>
-                                    </li>
-                                )
-                            }
+                        <li>
+                            <Link
+                                href="/dashboard"
+                                onClick={() => setOpen(false)}
+                                className={cn(
+                                    "flex gap-3 items-center px-3 py-3 rounded-xl transition-all duration-200 group",
+                                    pathname === "/dashboard"
+                                        ? "bg-slate-800/50 text-cyan-400 border border-slate-700/50 shadow-[inset_0_0_20px_rgba(34,211,238,0.05)]"
+                                        : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/30"
+                                )}
+                            >
+                                <LayoutDashboard className={cn("transition-colors shrink-0 w-5 h-5", pathname === "/dashboard" ? "text-cyan-400" : "text-slate-400 group-hover:text-slate-200")} />
+                                <span className="font-medium text-sm">Dashboard</span>
+                            </Link>
+                        </li>
 
-                            return (
-                                <li key={item.name}>
-                                    <Link
-                                        href={item.href}
-                                        onClick={() => setOpen(false)}
-                                        className={cn(
-                                            "flex gap-3 items-center px-3 py-3 rounded-xl transition-all duration-200 group",
-                                            pathname === item.href
-                                                ? "bg-slate-800/50 text-cyan-400 border border-slate-700/50 shadow-[inset_0_0_20px_rgba(34,211,238,0.05)]"
-                                                : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/30"
-                                        )}
-                                    >
-                                        <item.icon className={cn("transition-colors shrink-0 w-5 h-5", pathname === item.href ? "text-cyan-400" : "text-slate-400 group-hover:text-slate-200")} />
-                                        <span className="font-medium text-sm">{item.name}</span>
-                                    </Link>
-                                </li>
-                            )
-                        })}
+                        <li>
+                            <Link
+                                href="/accounts"
+                                onClick={() => setOpen(false)}
+                                className={cn(
+                                    "flex gap-3 items-center px-3 py-3 rounded-xl transition-all duration-200 group",
+                                    pathname === "/accounts"
+                                        ? "bg-slate-800/50 text-cyan-400 border border-slate-700/50 shadow-[inset_0_0_20px_rgba(34,211,238,0.05)]"
+                                        : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/30"
+                                )}
+                            >
+                                <Users className={cn("transition-colors shrink-0 w-5 h-5", pathname === "/accounts" ? "text-cyan-400" : "text-slate-400 group-hover:text-slate-200")} />
+                                <span className="font-medium text-sm">Accounts</span>
+                            </Link>
+                        </li>
 
+                        <li>
+                            <Link
+                                href="/strategies"
+                                onClick={() => setOpen(false)}
+                                className={cn(
+                                    "flex gap-3 items-center px-3 py-3 rounded-xl transition-all duration-200 group",
+                                    pathname === "/strategies"
+                                        ? "bg-slate-800/50 text-cyan-400 border border-slate-700/50 shadow-[inset_0_0_20px_rgba(34,211,238,0.05)]"
+                                        : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/30"
+                                )}
+                            >
+                                <Target className={cn("transition-colors shrink-0 w-5 h-5", pathname === "/strategies" ? "text-cyan-400" : "text-slate-400 group-hover:text-slate-200")} />
+                                <span className="font-medium text-sm">Strategies</span>
+                            </Link>
+                        </li>
+
+                        <li>
+                            <Link
+                                href="/analytics"
+                                onClick={() => setOpen(false)}
+                                className={cn(
+                                    "flex gap-3 items-center px-3 py-3 rounded-xl transition-all duration-200 group",
+                                    pathname === "/analytics"
+                                        ? "bg-slate-800/50 text-cyan-400 border border-slate-700/50 shadow-[inset_0_0_20px_rgba(34,211,238,0.05)]"
+                                        : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/30"
+                                )}
+                            >
+                                <History className={cn("transition-colors shrink-0 w-5 h-5", pathname === "/analytics" ? "text-cyan-400" : "text-slate-400 group-hover:text-slate-200")} />
+                                <span className="font-medium text-sm">Analytics</span>
+                            </Link>
+                        </li>
+
+                        <li>
+                            <Link
+                                href="/settings"
+                                onClick={() => setOpen(false)}
+                                className={cn(
+                                    "flex gap-3 items-center px-3 py-3 rounded-xl transition-all duration-200 group",
+                                    pathname === "/settings"
+                                        ? "bg-slate-800/50 text-cyan-400 border border-slate-700/50 shadow-[inset_0_0_20px_rgba(34,211,238,0.05)]"
+                                        : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/30"
+                                )}
+                            >
+                                <Settings className={cn("transition-colors shrink-0 w-5 h-5", pathname === "/settings" ? "text-cyan-400" : "text-slate-400 group-hover:text-slate-200")} />
+                                <span className="font-medium text-sm">Settings</span>
+                            </Link>
+                        </li>
+
+                        <li>
+                            <button
+                                type="button"
+                                onClick={() => handleSignOut()}
+                                onTouchEnd={(e) => {
+                                    e.preventDefault()
+                                    handleSignOut()
+                                }}
+                                className="flex gap-3 w-full items-center px-3 py-3 rounded-xl transition-all duration-200 cursor-pointer text-slate-400 hover:text-red-400 hover:bg-red-500/10 group active:bg-red-500/20"
+                            >
+                                <LogOut className="transition-colors shrink-0 w-5 h-5 group-hover:text-red-400 text-slate-400" />
+                                <span className="font-medium text-sm">Sign Out</span>
+                            </button>
+                        </li>
                     </ul>
                 </div>
             </SheetContent>
-        </Sheet >
+        </Sheet>
     )
 }
