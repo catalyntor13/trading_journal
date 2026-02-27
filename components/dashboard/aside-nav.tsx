@@ -6,10 +6,10 @@ import {
   Settings,
   ChevronLeft,
   ChevronRight,
-  Users
+  Users,
+  Target
 } from "lucide-react"
 import { SiGoogleanalytics } from "react-icons/si";
-import { IoLogoTableau } from "react-icons/io5";
 import Link from "next/link"
 import { usePathname } from "next/navigation" // Added for active state
 import SignOut from "../myComponents/SignOut"
@@ -23,7 +23,7 @@ export default function AsideNav() {
   const asideItems = [
     { name: "Dashboard", icon: LayoutDashboard, href: '/dashboard' },
     { name: "Accounts", icon: Users, href: '/accounts' }, // Placeholder href
-    { name: "Strategies", icon: IoLogoTableau, href: '/strategies' },
+    { name: "Strategies", icon: Target, href: '/strategies' },
     { name: "Analytics", icon: SiGoogleanalytics, href: '/analytics' },
     { name: "Settings", icon: Settings, href: '/settings' },
   ]
