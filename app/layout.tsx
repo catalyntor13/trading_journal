@@ -25,10 +25,10 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://mytradingjournal.com"), // Placeholder domain
+  metadataBase: new URL("https://trading-mars.vercel.app/"), // Placeholder domain
   title: {
-    default: "MySaaS Trading Journal | Track, Analyze, and Improve Your Trades",
-    template: "%s | MySaaS Trading Journal",
+    default: "MARS Trading Journal | Track, Analyze, and Improve Your Trades",
+    template: "%s | MARS Trading Journal",
   },
   description: "The ultimate trading journal to track your performance, analyze trades, and improve your edge in forex, crypto, and stocks.",
   keywords: [
@@ -40,29 +40,29 @@ export const metadata: Metadata = {
     "trade log",
     "day trading journal",
   ],
-  authors: [{ name: "MySaaS Team" }],
-  creator: "MySaaS Team",
+  authors: [{ name: "Catalin Toro" }],
+  creator: "Catalin Toro",
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "/",
-    title: "MySaaS Trading Journal | Track, Analyze, and Improve Your Trades",
+    url: "https://trading-mars.vercel.app/",
+    title: "MARS Trading Journal | Track, Analyze, and Improve Your Trades",
     description: "The ultimate trading journal to track your performance, analyze trades, and improve your edge in forex, crypto, and stocks.",
-    siteName: "MySaaS Trading Journal",
+    siteName: "MARS Trading Journal",
     images: [
       {
-        url: "/og-image.jpg", // We assume a default OG image will be added later
+        url: "/mars.svg", // Using the Mars planet logo for SEO og:image
         width: 1200,
         height: 630,
-        alt: "MySaaS Trading Journal",
+        alt: "MARS Trading Journal",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "MySaaS Trading Journal | Track, Analyze, and Improve Your Trades",
+    title: "MARS Trading Journal | Track, Analyze, and Improve Your Trades",
     description: "The ultimate trading journal to track your performance, analyze trades, and improve your edge in forex, crypto, and stocks.",
-    images: ["/og-image.jpg"],
+    images: ["/mars.svg"],
   },
   robots: {
     index: true,

@@ -59,30 +59,40 @@ export function MobileNav() {
                 <div className="p-4 relative z-10 flex flex-col flex-1 pb-8">
                     <div className="text-xs font-semibold text-slate-500 px-4 mb-2 uppercase tracking-wider">Menu</div>
                     <ul className="space-y-2 flex flex-col">
-                        {asideItems.map((item) => (
-                            <li key={item.name}>
-                                <Link
-                                    href={item.href}
-                                    onClick={(e) => {
-                                        if (item.name === "Sign Out") {
-                                            handleSignOut(e);
-                                        } else {
-                                            setOpen(false);
-                                        }
-                                    }}
-                                    className={cn(
-                                        "flex gap-3 items-center px-3 py-3 rounded-xl transition-all duration-200",
-                                        pathname === item.href
-                                            ? "bg-slate-800/50 text-cyan-400 border border-slate-700/50 shadow-[inset_0_0_20px_rgba(34,211,238,0.05)]"
-                                            : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/30"
-                                    )}
-                                >
-                                    <item.icon className={cn("transition-colors shrink-0 w-5 h-5", pathname === item.href ? "text-cyan-400" : "text-slate-400 group-hover:text-slate-200")} />
-                                    <span className="font-medium text-sm">{item.name}</span>
-                                </Link>
+                        {asideItems.map((item) => {
+                            if (item.name === "Sign Out") {
+                                return (
+                                    <li key={item.name}>
+                                        <button
+                                            type="button"
+                                            onClick={(e) => handleSignOut(e)}
+                                            className="flex gap-3 w-full items-center px-3 py-3 rounded-xl transition-all duration-200 cursor-pointer text-slate-400 hover:text-red-400 hover:bg-red-500/10 group"
+                                        >
+                                            <item.icon className="transition-colors shrink-0 w-5 h-5 group-hover:text-red-400 text-slate-400" />
+                                            <span className="font-medium text-sm">{item.name}</span>
+                                        </button>
+                                    </li>
+                                )
+                            }
 
-                            </li>
-                        ))}
+                            return (
+                                <li key={item.name}>
+                                    <Link
+                                        href={item.href}
+                                        onClick={() => setOpen(false)}
+                                        className={cn(
+                                            "flex gap-3 items-center px-3 py-3 rounded-xl transition-all duration-200 group",
+                                            pathname === item.href
+                                                ? "bg-slate-800/50 text-cyan-400 border border-slate-700/50 shadow-[inset_0_0_20px_rgba(34,211,238,0.05)]"
+                                                : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/30"
+                                        )}
+                                    >
+                                        <item.icon className={cn("transition-colors shrink-0 w-5 h-5", pathname === item.href ? "text-cyan-400" : "text-slate-400 group-hover:text-slate-200")} />
+                                        <span className="font-medium text-sm">{item.name}</span>
+                                    </Link>
+                                </li>
+                            )
+                        })}
 
                     </ul>
                 </div>
