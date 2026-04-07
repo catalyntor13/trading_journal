@@ -67,9 +67,9 @@ const TradingCalendar = ({ data }: { data: CalendarData }) => {
 
         <div className="text-[13px] text-muted-foreground space-x-4">
           <span>
-            Monthly P&L:{" "}
+            Monthly P&L: {" "}
             <span className={cn("font-bold", monthlyStats.profit >= 0 ? "text-emerald-500" : "text-red-500")}>
-              {monthlyStats.profit >= 0 ? "+" : ""}{monthlyStats.profit.toFixed(2)}
+              {monthlyStats.profit >= 0 ? "+$" : "-$"}{Math.abs(monthlyStats.profit).toFixed(2)}
             </span>
           </span>
           <span>
@@ -122,7 +122,7 @@ const TradingCalendar = ({ data }: { data: CalendarData }) => {
                   )}>
 
 
-                    {profit > 0 ? "+" : ""}{profit.toFixed(0)}
+                    {profit > 0 ? "+$" : "-$"}{Math.abs(profit).toFixed(0)}
 
 
 

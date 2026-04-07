@@ -3,6 +3,8 @@ import Footer from "@/components/landing/Footer";
 import Header from "@/components/landing/Header";
 import Hero from "@/components/landing/Hero";
 import HowWorks from "@/components/landing/HowWorks";
+import Pricing from "@/components/landing/Pricing";
+import Questions from "@/components/landing/Questions";
 
 export const metadata = {
   title: "MARS Trading Journal - Master Your Trading Strategy",
@@ -21,6 +23,7 @@ export default function Home() {
         <Hero />
         <Features />
         <HowWorks />
+        <Pricing />
 
         <Footer />
       </main>

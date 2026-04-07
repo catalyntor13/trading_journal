@@ -1,4 +1,5 @@
 "use client"
+import { motion } from 'framer-motion'
 
 import {
   Accordion,
@@ -9,7 +10,13 @@ import {
 
 const Questions = () => {
   return (
-    <section className="py-10">
+    <motion.section 
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ duration: 0.6 }}
+      className="py-10"
+    >
         <div className="lg:w-6xl p-6 lg:p-0  mx-auto">
             <div className="flex flex-col lg:flex-row items-start justify-center">
             <div className="w-full">
@@ -69,7 +76,7 @@ const Questions = () => {
             </div>
             </div>
         </div>
-    </section>
+    </motion.section>
   )
 }
 

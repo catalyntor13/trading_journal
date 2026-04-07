@@ -145,7 +145,7 @@ export async function getTrades(
         db.select()
             .from(TradingAccountsData)
             .where(eq(TradingAccountsData.accountId, accountId))
-            .orderBy(desc(TradingAccountsData.createdAt))
+            .orderBy(desc(TradingAccountsData.date))
             .limit(limit)
             .offset(offset),
         db.select({ count: sql<number>`count(*)` })

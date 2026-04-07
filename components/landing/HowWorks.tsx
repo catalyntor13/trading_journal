@@ -1,4 +1,5 @@
 "use client"
+import { motion } from 'framer-motion'
 
 const HowWorks = () => {
 
@@ -46,7 +47,14 @@ const HowWorks = () => {
 
           <div className="grid md:grid-cols-4 gap-8 relative z-10">
             {steps.map((step, index) => (
-              <div key={index} className="flex flex-col items-center text-center group h-full">
+              <motion.div 
+                key={index} 
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ delay: index * 0.2, duration: 0.5 }}
+                className="flex flex-col items-center text-center group h-full"
+              >
                 {/* Number Circle */}
                 <div className="w-16 h-16 rounded-full bg-slate-900 border border-white/10 flex items-center justify-center mb-6 group-hover:border-orange-500/50 transition-all duration-500 shadow-xl relative shrink-0">
                   <span className="text-orange-500 font-black text-xl">{step.number}</span>
@@ -61,7 +69,7 @@ const HowWorks = () => {
                     {step.desc}
                   </p>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>

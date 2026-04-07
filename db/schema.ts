@@ -1,5 +1,7 @@
 import { relations } from "drizzle-orm";
-import { pgTable, text, timestamp, boolean, index } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, boolean, index, pgEnum, varchar } from "drizzle-orm/pg-core";
+
+export const planEnum = pgEnum("plan", ["free", "pro", "lifetime"]);
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -12,6 +14,12 @@ export const user = pgTable("user", {
     .defaultNow()
     .$onUpdate(() => /* @__PURE__ */ new Date())
     .notNull(),
+
+  plan: planEnum("plan").default("free").notNull(),
+  mollieCustomerId: varchar("mollie_customer_id", { length: 255 }),
+  mollieSubscriptionId: varchar("mollie_subscription_id", { length: 255 }),
+  subscriptionStatus: varchar("subscription_status", { length: 50 }), // 'active', 'past_due', 'canceled'
+  subscriptionEndDate: timestamp("subscription_end_date"),
 });
 
 export const session = pgTable(

@@ -1,4 +1,5 @@
 "use client"
+import { motion } from 'framer-motion'
 
 
 
@@ -14,12 +15,19 @@ const Features = () => {
     <section id="features" className="py-24 bg-slate-950 px-6">
       <div className="max-w-7xl mx-auto">
         <div className="grid md:grid-cols-3 gap-8">
-          {feats.map((f) => (
-            <div key={f.title} className="group p-10 rounded-3xl bg-white/5 border border-white/5 hover:border-orange-500/50 transition-all duration-500">
+          {feats.map((f, i) => (
+            <motion.div 
+              key={f.title} 
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ delay: i * 0.2, duration: 0.6 }}
+              className="group p-10 rounded-3xl bg-white/5 border border-white/5 hover:border-orange-500/50 transition-all duration-500"
+            >
               <div className="text-4xl mb-6 group-hover:scale-110 transition-transform duration-300">{f.icon}</div>
               <h3 className="text-2xl font-bold text-white mb-3">{f.title}</h3>
               <p className="text-slate-400 leading-relaxed">{f.desc}</p>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>

@@ -11,6 +11,7 @@ export const auth = betterAuth({
     provider: "pg", // Specificăm că folosim Postgres
   }),
 
+
   emailVerification: {
     sendOnSignUp: true,
     async sendVerificationEmail({ user, url }) {
@@ -33,9 +34,10 @@ export const auth = betterAuth({
     },
   },
 
+
   emailAndPassword: {
     enabled: true, // Activăm login cu email/parolă
-    requireEmailVerification: true,
+
 
     async sendResetPassword(data) {
       try {
@@ -63,7 +65,13 @@ export const auth = betterAuth({
   user: {
     deleteUser: {
       enabled: true,
-    }
+    },
+    additionalFields: {
+      plan: { type: "string" },
+      mollieCustomerId: { type: "string" },
+      subscriptionStatus: { type: "string" },
+      subscriptionEndDate: { type: "date" },
+    },
   },
 
   socialProviders: {

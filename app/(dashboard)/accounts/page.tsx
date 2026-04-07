@@ -1,6 +1,6 @@
 
 
-import { getAccounts, deleteAccount } from "@/app/actions/accounts"
+import { getAccounts } from "@/app/actions/accounts"
 import { CreateAccountForm } from "@/components/dashboard/CreateAccountForm"
 import { AccountCard } from "@/components/dashboard/AccountCard"
 import Link from "next/link"

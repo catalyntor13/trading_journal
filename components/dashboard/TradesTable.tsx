@@ -89,7 +89,7 @@ export function TradesTable({
                                 </div>
                                 <div>
                                     <p className="text-muted-foreground">Date</p>
-                                    <p className="text-foreground font-medium">{format(new Date(viewTrade.createdAt), "PPP")}</p>
+                                    <p className="text-foreground font-medium">{format(new Date(viewTrade.date || viewTrade.createdAt), "PPP")}</p>
                                 </div>
                                 <div>
                                     <p className="text-muted-foreground">Strategy</p>
@@ -231,15 +231,15 @@ export function TradesTable({
                                                         {trade.direction}
                                                     </span>
                                                 </div>
-                                                <p className="text-[13px] text-muted-foreground">{format(new Date(trade.createdAt), "MMM d")} • {trade.tod}</p>
+                                                <p className="text-[13px] text-muted-foreground">{format(new Date(trade.date || trade.createdAt), "MMM d")} • {trade.tod}</p>
                                             </div>
                                             <div className="text-right flex items-start gap-1">
                                                 <div className="flex flex-col items-end">
                                                     <div className={`text-xl tracking-tight font-bold flex items-center justify-end gap-1 ${netProfit >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
                                                         {netProfit >= 0 ? <ArrowUpRight className="h-5 w-5" /> : <ArrowDownRight className="h-5 w-5" />}
-                                                        {Math.abs(netProfit).toFixed(2)}$
+                                                        {Math.abs(netProfit).toFixed(2)}€
                                                     </div>
-                                                    <div className="text-[13px] text-muted-foreground mt-0.5">Comm: -{commission.toFixed(2)}$</div>
+                                                    <div className="text-[13px] text-muted-foreground mt-0.5">Comm: -{commission.toFixed(2)}€</div>
                                                 </div>
                                                 <div className="-mt-1 -mr-2">
                                                     {renderActions(trade, true)}
@@ -298,7 +298,7 @@ export function TradesTable({
                                         return (
                                             <TableRow key={trade.id} className="border-border hover:bg-muted/40 transition-colors h-14">
                                                 <TableCell className="font-medium text-foreground whitespace-nowrap">
-                                                    {format(new Date(trade.createdAt), "MMM d")}
+                                                    {format(new Date(trade.date || trade.createdAt), "MMM d")}
                                                 </TableCell>
                                                 <TableCell className="font-bold text-foreground">{trade.pair}</TableCell>
                                                 <TableCell>

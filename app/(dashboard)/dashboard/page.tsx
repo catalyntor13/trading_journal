@@ -1,4 +1,4 @@
-import { cn, formatCurrency } from "@/lib/utils"
+import { formatCurrency } from "@/lib/utils"
 import { Wallet, Activity, DollarSign } from "lucide-react"
 import { getAccounts } from "@/app/actions/accounts"
 import { getDashboardStats } from "@/app/actions/dashboard"

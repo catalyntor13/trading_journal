@@ -241,32 +241,25 @@ export async function getDashboardStats(accountId?: string) {
         }
     })
 
-    // Handle empty state
+    // Ensure the chart always visually starts from the initial balance baseline
     if (cumulativeChartData.length === 0) {
-        const today = new Date();
-        const yesterday = new Date(today);
-        yesterday.setDate(yesterday.getDate() - 1);
-
         cumulativeChartData.push({
-            date: formatShortDate(yesterday.toISOString()),
-            rawDate: yesterday.toISOString().split('T')[0],
+            date: "Start",
+            rawDate: "Start",
             dailyProfit: 0,
             balance: initialBalance
         });
+        const today = new Date();
         cumulativeChartData.push({
             date: formatShortDate(today.toISOString()),
             rawDate: today.toISOString().split('T')[0],
             dailyProfit: 0,
             balance: initialBalance
         });
-    } else if (cumulativeChartData.length === 1) {
-        // Prepend a dummy start point to ensure Recharts draws a line
-        const firstPoint = cumulativeChartData[0];
-        const d = new Date(firstPoint.rawDate);
-        d.setDate(d.getDate() - 1);
+    } else {
         cumulativeChartData.unshift({
-            date: formatShortDate(d.toISOString()),
-            rawDate: d.toISOString().split('T')[0],
+            date: "Start",
+            rawDate: "Start",
             dailyProfit: 0,
             balance: initialBalance
         });

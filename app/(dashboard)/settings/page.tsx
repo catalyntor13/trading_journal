@@ -1,6 +1,6 @@
 "use client"
 
-import { Key, User, CreditCard, ShieldAlert, Check, Loader2 } from "lucide-react"
+import { Key, User, CreditCard, ShieldAlert, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
     Dialog,
@@ -9,15 +9,24 @@ import {
     DialogHeader,
     DialogTitle,
     DialogTrigger,
+    DialogClose,
+    DialogFooter,
 } from "@/components/ui/dialog"
 import { useState, useEffect } from "react"
 import { authClient } from "@/lib/auth-client"
 import { toast } from "react-hot-toast"
 import { useRouter } from "next/navigation"
+import { Session } from "@/lib/auth-types"
+
+
+
 
 export default function SettingsPage() {
     const router = useRouter()
-    const { data: session, isPending } = authClient.useSession()
+    const [loading, setLoading] = useState(false)
+    const { data, isPending } = authClient.useSession()
+    const session = data as Session;
+    const [isOpen, setIsOpen] = useState(false)
 
     const [name, setName] = useState("")
     const [currentPassword, setCurrentPassword] = useState("")
@@ -27,6 +36,12 @@ export default function SettingsPage() {
     const [isChangingPassword, setIsChangingPassword] = useState(false)
     const [isDeletingAccount, setIsDeletingAccount] = useState(false)
     const [isGoogleAuth, setIsGoogleAuth] = useState(false)
+
+
+    const expireDate = new Date(session?.user?.subscriptionEndDate);
+
+
+
 
     useEffect(() => {
         if (session?.user?.name) {
@@ -92,7 +107,7 @@ export default function SettingsPage() {
     }
 
     const handleDeleteAccount = async () => {
-        if (!confirm("Are you sure you want to permanently delete your account? This action cannot be undone.")) return
+
         setIsDeletingAccount(true)
         await authClient.deleteUser({
             fetchOptions: {
@@ -107,185 +122,313 @@ export default function SettingsPage() {
             }
         })
     }
+
+
+    const handleCancelSubscription = async () => {
+        setLoading(true)
+        try {
+            const res = await fetch("/api/billing/cancel", {
+                method: "POST",
+            });
+
+            if (!res.ok) {
+                throw new Error("Failed to cancel subscription");
+            }
+
+            toast.success("Subscription cancelled successfully");
+            setIsOpen(false);
+            window.location.reload();
+        } catch (error) {
+            console.error("Failed to cancel subscription", error);
+            toast.error("Failed to cancel subscription");
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const handleRenewPlan = async () => {
+        setLoading(true)
+        try {
+            const res = await fetch("/api/billing/checkout", {
+                method: "POST",
+            });
+
+            if (!res.ok) {
+                throw new Error("Failed to renew subscription");
+            }
+
+            const data = await res.json();
+            window.location.href = data.checkoutUrl;
+        } catch (error) {
+            console.error("Failed to renew subscription", error);
+            toast.error("Failed to renew subscription");
+        } finally {
+            setLoading(false)
+        }
+    }
+
+
     return (
-        <section className="p-6 bg-background/50 min-h-full space-y-8">
-            <div className="max-w-4xl mx-auto">
-                <div className="mb-8">
-                    <h1 className="text-3xl font-bold text-foreground tracking-tight mb-2">Account Settings</h1>
-                    <p className="text-muted-foreground">Manage your profile, security, and subscription preferences</p>
+        <section className="p-4 md:p-8 bg-background/50 min-h-full flex justify-center">
+            <div className="w-full max-w-5xl">
+                {/* Header */}
+                <div className="mb-8 px-2 md:px-0">
+                    <h1 className="text-3xl font-bold text-foreground tracking-tight mb-2">Settings</h1>
+                    <p className="text-muted-foreground">Manage your account preferences, security, and subscription.</p>
                 </div>
 
-                <div className="space-y-6">
+                {/* Main Unified Container */}
+                <div className="bg-card w-full border border-border shadow-sm rounded-2xl overflow-hidden divide-y divide-border">
 
-                    {/* Profile Information */}
-                    <div className="bg-card p-6 rounded-2xl border border-border shadow-sm">
-                        <h2 className="text-xl font-semibold text-card-foreground mb-6 flex items-center gap-2">
-                            <User className="w-5 h-5 text-emerald-500" />
-                            Profile Information
-                        </h2>
-                        <div className="grid gap-6 md:grid-cols-2">
+                    {/* Profile Information Section */}
+                    <div className="p-6 md:p-8 flex flex-col md:flex-row gap-6 md:gap-12">
+                        <div className="md:w-1/3 shrink-0">
+                            <h2 className="text-base font-semibold text-foreground flex items-center gap-2">
+                                <User className="w-4 h-4 text-emerald-500" />
+                                Profile Display
+                            </h2>
+                            <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed">
+                                Update your personal details. Changing your display name will update it across the platform.
+                            </p>
+                        </div>
+                        <div className="md:w-2/3 space-y-6 max-w-xl w-full">
                             <div className="space-y-2">
-                                <label className="text-sm text-muted-foreground font-medium">Display Name</label>
-                                <div className="flex gap-3">
+                                <label className="text-sm text-foreground font-medium">Display Name</label>
+                                <div className="flex flex-col sm:flex-row gap-3">
                                     <input
                                         type="text"
                                         value={name}
                                         onChange={(e) => setName(e.target.value)}
                                         disabled={isPending || isUpdatingName}
-                                        className="w-full bg-background border border-border rounded-lg px-4 py-2.5 text-foreground focus:outline-none focus:border-emerald-500 transition-colors disabled:opacity-50"
+                                        className="w-full sm:flex-1 bg-background border border-border rounded-lg px-4 py-2 text-foreground focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all disabled:opacity-50"
+                                        placeholder="Your name"
                                     />
-                                    <Button onClick={handleUpdateName} disabled={isPending || isUpdatingName || name === session?.user?.name} className="h-[42px] bg-emerald-600 hover:bg-emerald-700 text-white">
+                                    <Button
+                                        onClick={handleUpdateName}
+                                        disabled={isPending || isUpdatingName || name === session?.user?.name}
+                                        className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white min-w-[100px]"
+                                    >
                                         {isUpdatingName ? <Loader2 className="animate-spin w-4 h-4" /> : "Save"}
                                     </Button>
                                 </div>
                             </div>
                             <div className="space-y-2">
-                                <label className="text-sm text-muted-foreground font-medium">Email Address</label>
+                                <label className="text-sm text-foreground font-medium">Email Address</label>
                                 <input
                                     type="email"
                                     value={session?.user?.email || ""}
                                     disabled
-                                    className="w-full bg-muted/50 border border-border rounded-lg px-4 py-2.5 text-muted-foreground cursor-not-allowed"
+                                    className="w-full bg-muted/40 border border-border rounded-lg px-4 py-2 text-muted-foreground cursor-not-allowed opacity-70"
                                 />
-                                <p className="text-xs text-muted-foreground">Contact support to change your email address.</p>
+                                <p className="text-xs text-muted-foreground">To change your associated email address, please contact support.</p>
                             </div>
                         </div>
+                    </div>
 
-                        {/* Subscription Status - Temporarily hidden */}
-                        {false && (
-                            <div className="mt-8 pt-6 border-t border-border">
-                                <h3 className="text-lg font-medium text-card-foreground mb-4 flex items-center gap-2">
-                                    <CreditCard className="w-5 h-5 text-purple-500" />
-                                    Current Subscription
-                                </h3>
-                                <div className="bg-muted/30 p-4 rounded-xl border border-border flex flex-col md:flex-row md:items-center justify-between gap-4">
-                                    <div>
-                                        <div className="flex items-center gap-3 mb-1">
-                                            <span className="text-foreground font-semibold text-lg">Pro Plan</span>
-                                            <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 text-xs font-medium border border-emerald-500/20">Active</span>
-                                        </div>
-                                        <p className="text-muted-foreground text-sm">Next billing date: <span className="text-foreground">October 24, 2026</span></p>
+                    {/* Subscription Section */}
+                    <div className="p-6 md:p-8 flex flex-col md:flex-row gap-6 md:gap-12 bg-muted/10">
+                        <div className="md:w-1/3 shrink-0">
+                            <h2 className="text-base font-semibold text-foreground flex items-center gap-2">
+                                <CreditCard className="w-4 h-4 text-blue-500" />
+                                Billing & Subscription
+                            </h2>
+                            <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed">
+                                Manage your current plan, check your billing cycle, or cancel your subscription.
+                            </p>
+                        </div>
+                        <div className="md:w-2/3 max-w-xl w-full">
+                            <div className="bg-background p-5 rounded-xl border border-border flex flex-col sm:flex-row sm:items-center justify-between gap-5 shadow-sm">
+                                <div className="space-y-1.5">
+                                    <div className="flex items-center gap-3">
+                                        <span className="text-foreground font-semibold">Pro Plan</span>
+                                        {session?.user?.subscriptionStatus === "canceled" ? (
+                                            <span className="px-2.5 py-0.5 rounded-full bg-red-500/10 text-red-500 text-xs font-semibold border border-red-500/20">Canceled</span>
+                                        ) : (
+                                            <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 text-xs font-semibold border border-emerald-500/20">Active</span>
+                                        )}
                                     </div>
-                                    <div className="flex gap-3">
+                                    {session?.user?.subscriptionStatus === "canceled" ? (
+                                        <p className="text-muted-foreground text-sm leading-relaxed">
+                                            Your subscription will end on <span className="font-medium text-foreground">{expireDate?.toLocaleDateString()}</span>.
+                                        </p>
+                                    ) : (
+                                        <p className="text-muted-foreground text-sm">
+                                            Renews automatically on <span className="font-medium text-foreground">{expireDate?.toLocaleDateString()}</span>
+                                        </p>
+                                    )}
+                                </div>
+                                <div className="shrink-0 w-full sm:w-auto">
+                                    {session?.user?.subscriptionStatus === "canceled" ? (
                                         <Dialog>
                                             <DialogTrigger asChild>
-                                                <Button variant="outline" className="border-border bg-background text-foreground hover:bg-muted">Change Plan</Button>
+                                                <Button
+                                                    className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white font-medium shadow-sm transition-colors"
+                                                >
+                                                    Renew Plan
+                                                </Button>
                                             </DialogTrigger>
-                                            <DialogContent className="sm:max-w-[700px] bg-popover border-border text-popover-foreground">
+                                            <DialogContent>
                                                 <DialogHeader>
-                                                    <DialogTitle className="text-popover-foreground text-xl">Choose your plan</DialogTitle>
-                                                    <DialogDescription className="text-muted-foreground">
-                                                        Unlock advanced features with our Pro plan.
+                                                    <DialogTitle>Renew Subscription</DialogTitle>
+                                                    <DialogDescription>
+                                                        Are you sure you want to renew your subscription?
                                                     </DialogDescription>
                                                 </DialogHeader>
-
-                                                <div className="grid md:grid-cols-2 gap-4 mt-4">
-                                                    {/* ESSENTIAL PLAN */}
-                                                    <div className="border border-border rounded-xl p-5 bg-card flex flex-col relative overflow-hidden">
-                                                        <div className="mb-4">
-                                                            <h3 className="text-lg font-semibold text-card-foreground">Essential</h3>
-                                                            <p className="text-muted-foreground text-sm">Perfect for getting started</p>
-                                                        </div>
-                                                        <div className="mb-6">
-                                                            <span className="text-3xl font-bold text-card-foreground">$0</span>
-                                                            <span className="text-muted-foreground">/month</span>
-                                                        </div>
-                                                        <ul className="space-y-3 mb-8 text-sm text-muted-foreground flex-1">
-                                                            <li className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-500" /> Basic Analytics</li>
-                                                            <li className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-500" /> up to 3 Accounts</li>
-                                                            <li className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-500" /> 5 Strategies</li>
-                                                        </ul>
-                                                        <Button disabled className="w-full bg-muted text-muted-foreground border border-border">Current Plan</Button>
-                                                    </div>
-
-                                                    {/* PRO PLAN */}
-                                                    <div className="border border-emerald-500/50 rounded-xl p-5 bg-emerald-500/5 flex flex-col relative">
-                                                        <div className="absolute top-0 right-0 bg-emerald-500 text-white text-[10px] font-bold px-2 py-1 rounded-bl-lg">
-                                                            RECOMMENDED
-                                                        </div>
-                                                        <div className="mb-4">
-                                                            <h3 className="text-lg font-semibold text-foreground">Pro Trader</h3>
-                                                            <p className="text-emerald-500/80 text-sm">For serious traders</p>
-                                                        </div>
-                                                        <div className="mb-6">
-                                                            <span className="text-3xl font-bold text-foreground">$29</span>
-                                                            <span className="text-muted-foreground">/month</span>
-                                                        </div>
-                                                        <ul className="space-y-3 mb-8 text-sm text-muted-foreground flex-1">
-                                                            <li className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-500" /> Advanced Analytics & Charts</li>
-                                                            <li className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-500" /> Unlimited Accounts</li>
-                                                            <li className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-500" /> Unlimited Strategies</li>
-                                                            <li className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-500" /> Priority Support</li>
-                                                        </ul>
-                                                        <Button className="w-full bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/20">
-                                                            Upgrade to Pro
-                                                        </Button>
-                                                    </div>
-                                                </div>
+                                                <DialogFooter>
+                                                    <DialogClose asChild>
+                                                        <Button variant="outline">Cancel</Button>
+                                                    </DialogClose>
+                                                    <Button onClick={handleRenewPlan}>Renew</Button>
+                                                </DialogFooter>
                                             </DialogContent>
                                         </Dialog>
-                                        <Button variant="ghost" className="text-destructive hover:text-destructive hover:bg-destructive/10">Cancel Subscription</Button>
+                                    ) : (
+                                        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+                                            <DialogTrigger asChild>
+                                                <Button variant="outline" className="w-full sm:w-auto border-red-200 hover:bg-red-50 hover:border-red-300 text-red-600 transition-colors shadow-sm dark:border-red-900/50 dark:hover:bg-red-900/20 dark:text-red-500">
+                                                    Cancel Plan
+                                                </Button>
+                                            </DialogTrigger>
+                                            <DialogContent className="sm:max-w-[425px] bg-popover border-border text-popover-foreground">
+                                                <DialogHeader>
+                                                    <DialogTitle>Cancel Subscription</DialogTitle>
+                                                    <DialogDescription>
+                                                        Are you sure you want to cancel your subscription? You will still be able to access all Pro features until your current billing period ends.
+                                                    </DialogDescription>
+                                                </DialogHeader>
+                                                <DialogFooter className="mt-4 gap-2 sm:gap-0">
+                                                    <DialogClose asChild>
+                                                        <Button variant="outline">Keep Subscription</Button>
+                                                    </DialogClose>
+                                                    <Button
+                                                        variant="destructive"
+                                                        onClick={handleCancelSubscription}
+                                                        disabled={loading}
+                                                    >
+                                                        {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                                                        Yes, Cancel Subscription
+                                                    </Button>
+                                                </DialogFooter>
+                                            </DialogContent>
+                                        </Dialog>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Security Section */}
+                    <div className="p-6 md:p-8 flex flex-col md:flex-row gap-6 md:gap-12">
+                        <div className="md:w-1/3 shrink-0">
+                            <h2 className="text-base font-semibold text-foreground flex items-center gap-2">
+                                <Key className="w-4 h-4 text-orange-500" />
+                                Security Settings
+                            </h2>
+                            <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed">
+                                Update your password to keep your account secure. Use a strong, unique password.
+                            </p>
+                        </div>
+                        <div className="md:w-2/3 max-w-xl w-full">
+                            {isGoogleAuth ? (
+                                <div className="p-4 bg-orange-500/10 rounded-xl border border-orange-500/20 text-orange-600 dark:text-orange-400">
+                                    <p className="text-sm flex items-center gap-2 font-medium">
+                                        <ShieldAlert className="w-4 h-4" />
+                                        Google Authentication Linked
+                                    </p>
+                                    <p className="text-xs mt-1.5 opacity-80 leading-relaxed">
+                                        You are authenticated via Google, so you do not have a separate password for this platform.
+                                    </p>
+                                </div>
+                            ) : (
+                                <div className="space-y-6">
+                                    <div className="space-y-4">
+                                        <div className="space-y-2">
+                                            <label className="text-sm text-foreground font-medium">Current Password</label>
+                                            <input
+                                                type="password"
+                                                value={currentPassword}
+                                                onChange={(e) => setCurrentPassword(e.target.value)}
+                                                disabled={isChangingPassword}
+                                                className="w-full bg-background border border-border rounded-lg px-4 py-2 text-foreground focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all disabled:opacity-50"
+                                                placeholder="••••••••"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-sm text-foreground font-medium">New Password</label>
+                                            <input
+                                                type="password"
+                                                value={newPassword}
+                                                onChange={(e) => setNewPassword(e.target.value)}
+                                                disabled={isChangingPassword}
+                                                className="w-full bg-background border border-border rounded-lg px-4 py-2 text-foreground focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all disabled:opacity-50"
+                                                placeholder="••••••••"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="flex justify-start sm:justify-end">
+                                        <Button
+                                            onClick={handleChangePassword}
+                                            disabled={isChangingPassword || !currentPassword || !newPassword}
+                                            className="bg-foreground text-background hover:bg-foreground/90 transition-colors w-full sm:w-auto font-medium"
+                                        >
+                                            {isChangingPassword ? <Loader2 className="animate-spin w-4 h-4 mr-2" /> : null}
+                                            Update Password
+                                        </Button>
                                     </div>
                                 </div>
-                            </div>
-                        )}
+                            )}
+                        </div>
                     </div>
 
-                    {/* Change Password */}
-                    <div className="bg-card p-6 rounded-2xl border border-border shadow-sm">
-                        <h2 className="text-xl font-semibold text-card-foreground mb-6 flex items-center gap-2">
-                            <Key className="w-5 h-5 text-orange-500" />
-                            Change Password
-                        </h2>
-                        {isGoogleAuth ? (
-                            <div className="p-4 bg-muted/50 rounded-xl border border-border">
-                                <p className="text-muted-foreground">You are authenticated using Google.</p>
-                            </div>
-                        ) : (
-                            <div className="max-w-md space-y-4">
-                                <div className="space-y-2">
-                                    <label className="text-sm text-muted-foreground font-medium">Current Password</label>
-                                    <input
-                                        type="password"
-                                        value={currentPassword}
-                                        onChange={(e) => setCurrentPassword(e.target.value)}
-                                        disabled={isChangingPassword}
-                                        className="w-full bg-background border border-border rounded-lg px-4 py-2.5 text-foreground focus:outline-none focus:border-orange-500 transition-colors disabled:opacity-50"
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="text-sm text-muted-foreground font-medium">New Password</label>
-                                    <input
-                                        type="password"
-                                        value={newPassword}
-                                        onChange={(e) => setNewPassword(e.target.value)}
-                                        disabled={isChangingPassword}
-                                        className="w-full bg-background border border-border rounded-lg px-4 py-2.5 text-foreground focus:outline-none focus:border-orange-500 transition-colors disabled:opacity-50"
-                                    />
-                                </div>
-                                <Button onClick={handleChangePassword} disabled={isChangingPassword || !currentPassword || !newPassword} className="bg-muted hover:bg-muted/80 text-foreground border border-border">
-                                    {isChangingPassword ? <Loader2 className="animate-spin w-4 h-4 mr-2" /> : null}
-                                    Update Password
-                                </Button>
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Danger Zone - Delete Account */}
-                    <div className="bg-destructive/5 border border-destructive/20 p-6 rounded-2xl">
-                        <h2 className="text-xl font-semibold text-destructive mb-4 flex items-center gap-2">
-                            <ShieldAlert className="w-5 h-5" />
-                            Danger Zone
-                        </h2>
-                        <div className="flex items-center justify-between">
+                    {/* Danger Zone */}
+                    <div className="p-6 md:p-8 flex flex-col md:flex-row gap-6 md:gap-12 bg-destructive/5">
+                        <div className="md:w-1/3 shrink-0">
+                            <h2 className="text-base font-semibold text-destructive flex items-center gap-2">
+                                <ShieldAlert className="w-4 h-4" />
+                                Danger Zone
+                            </h2>
+                            <p className="text-sm text-destructive/80 mt-1.5 leading-relaxed">
+                                Irreversible and destructive actions for your account data. Proceed with caution.
+                            </p>
+                        </div>
+                        <div className="md:w-2/3 max-w-xl w-full flex flex-col sm:flex-row sm:items-center justify-between gap-5">
                             <div>
-                                <p className="text-foreground font-medium">Delete Account</p>
-                                <p className="text-sm text-muted-foreground mt-1">Permanently remove your account and all of its content.</p>
+                                <p className="text-foreground font-medium text-sm">Delete Account</p>
+                                <p className="text-xs text-muted-foreground mt-0.5">Permanently remove your account and all associated content.</p>
                             </div>
-                            <Button onClick={handleDeleteAccount} disabled={isDeletingAccount} variant="destructive" className="bg-destructive/10 hover:bg-destructive text-destructive hover:text-white border border-destructive/30">
-                                {isDeletingAccount ? <Loader2 className="animate-spin w-4 h-4 mr-2" /> : null}
-                                Delete Account
-                            </Button>
+                            <Dialog>
+                                <DialogTrigger asChild>
+                                    <Button variant="destructive" className="w-full sm:w-auto bg-destructive/90 hover:bg-destructive text-white shadow-sm border border-destructive/30 shrink-0">
+                                        {isDeletingAccount ? <Loader2 className="animate-spin w-4 h-4 mr-2" /> : null}
+                                        Delete Account
+                                    </Button>
+                                </DialogTrigger>
+                                <DialogContent className="sm:max-w-[425px] bg-popover border-border text-popover-foreground">
+                                    <DialogHeader>
+                                        <DialogTitle className="text-destructive flex items-center gap-2">
+                                            <ShieldAlert className="w-5 h-5" />
+                                            Delete Account
+                                        </DialogTitle>
+                                        <DialogDescription className="text-muted-foreground pt-2">
+                                            Are you absolutely sure you want to permanently delete your account? This action cannot be undone.
+                                        </DialogDescription>
+                                    </DialogHeader>
+                                    <DialogFooter className="mt-4 gap-2 sm:gap-0">
+                                        <DialogClose asChild>
+                                            <Button variant="outline" className="border-border">Cancel</Button>
+                                        </DialogClose>
+                                        <Button
+                                            onClick={handleDeleteAccount}
+                                            disabled={isDeletingAccount}
+                                            variant="destructive"
+                                            className="bg-destructive hover:bg-destructive/90 text-white"
+                                        >
+                                            {isDeletingAccount ? <Loader2 className="animate-spin w-4 h-4 mr-2" /> : null}
+                                            Confirm Delete
+                                        </Button>
+                                    </DialogFooter>
+                                </DialogContent>
+                            </Dialog>
                         </div>
                     </div>
 

@@ -16,10 +16,19 @@ export default async function DashboardLayout({
     headers: await headers()
   });
 
-  // 2. Dacă nu există sesiune, dăm KICK către homepage sau login
+  // 1. Verificăm întâi dacă e logat
   if (!session) {
-    redirect("/login"); // sau redirect("/login")
+    redirect("/login");
   }
+
+  // 2. Verificam accesul conform planului de subscribe
+  const hasAccess = session?.user.plan === "pro" || session?.user.plan === "lifetime";
+
+  if (!hasAccess) {
+    redirect("/subscribe");
+  }
+
+  // 2. Dacă nu există sesiune, dăm KICK către homepage sau login
 
 
   return (

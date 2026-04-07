@@ -1,6 +1,7 @@
 "use client"
 
 import Link from 'next/link'
+import { motion } from 'framer-motion'
 
 const Hero = () => {
   return (
@@ -13,7 +14,12 @@ const Hero = () => {
       </div>
 
       <div className="container px-6 md:px-12 relative z-10">
-        <div className="max-w-6xl flex flex-col items-center justify-center ">
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }} 
+          animate={{ opacity: 1, y: 0 }} 
+          transition={{ duration: 0.8, ease: "easeOut" }} 
+          className="max-w-6xl flex flex-col items-center justify-center "
+        >
           <div className="inline-block px-4 py-1.5 mb-6 border border-orange-500/30 rounded-full bg-orange-500/10 backdrop-blur-md">
             <span className="text-orange-400 text-[10px] font-bold uppercase tracking-[0.2em]">
               The Next Frontier in Trading
@@ -46,7 +52,7 @@ const Hero = () => {
             <span className="text-white font-bold tracking-tighter text-xl italic">FOREX</span>
             <span className="text-white font-bold tracking-tighter text-xl italic">CRYPTO</span>
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   )

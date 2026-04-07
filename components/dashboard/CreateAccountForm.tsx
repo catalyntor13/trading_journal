@@ -17,7 +17,6 @@ import {
     Dialog,
     DialogContent,
     DialogDescription,
-    DialogFooter,
     DialogHeader,
     DialogTitle,
     DialogTrigger,
@@ -33,6 +32,15 @@ import { Plus, Loader2 } from "lucide-react"
 import { createAccount } from "@/app/actions/accounts"
 import { accountSchema, type AccountFormValues } from "@/lib/schemas"
 import { useRouter } from "next/navigation"
+
+const formatNumberStr = (val: string) => {
+    if (!val) return "";
+    const clean = val.toString().replace(/,/g, '');
+    if (isNaN(Number(clean)) && clean !== '.' && clean !== '-') return val;
+    const parts = clean.split('.');
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return parts.join('.');
+};
 
 export function CreateAccountForm({ children }: { children?: React.ReactNode }) {
     const [open, setOpen] = useState(false)
@@ -110,7 +118,16 @@ export function CreateAccountForm({ children }: { children?: React.ReactNode }) 
                                     <FormItem>
                                         <FormLabel className="text-foreground/80">Initial Balance</FormLabel>
                                         <FormControl>
-                                            <Input placeholder="10000" {...field} className="bg-background/50 border-border/50 font-mono" />
+                                            <Input
+                                                placeholder="10,000"
+                                                {...field}
+                                                value={field.value ? formatNumberStr(field.value.toString()) : ""}
+                                                onChange={(e) => {
+                                                    const rawValue = e.target.value.replace(/,/g, '');
+                                                    field.onChange(rawValue);
+                                                }}
+                                                className="bg-background/50 border-border/50 font-mono"
+                                            />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
