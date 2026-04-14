@@ -116,8 +116,8 @@ export async function POST(req: Request) {
                     // Mollie customer doesn't natively guarantee country in base object unless custom meta
                     // Depending on how you collect it, maybe from billingAddress.country or metadata
                     // Not strictly standard but let's try if you map it
-                } catch(e) {
-                   // ignore
+                } catch (e) {
+                    // ignore
                 }
             }
 
@@ -157,7 +157,7 @@ export async function POST(req: Request) {
                 : "Payment Confirmation — MARS Trading Journal";
 
             await resend.emails.send({
-                from: "MARS Trading <onboarding@resend.dev>",
+                from: "MARS Trading <noreply@tradingmars.com>",
                 to: dbUser.email,
                 subject: emailSubject,
                 attachments: [{ filename: `invoice_${payment.id}.pdf`, content: pdfBuffer }],

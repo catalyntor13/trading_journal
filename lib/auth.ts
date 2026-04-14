@@ -18,7 +18,7 @@ export const auth = betterAuth({
     async sendVerificationEmail({ user, url }) {
       try {
         await resend.emails.send({
-          from: "MARS Trading <onboarding@resend.dev>",
+          from: "MARS Trading <noreply@tradingmars.com>",
           to: user.email,
           subject: "Verify your email — MARS Trading Journal",
           html: verificationEmail({
@@ -45,7 +45,7 @@ export const auth = betterAuth({
     async sendResetPassword(data) {
       try {
         await resend.emails.send({
-          from: "MARS Trading <onboarding@resend.dev>",
+          from: "MARS Trading <noreply@tradingmars.com>",
           to: data.user.email,
           subject: "Reset your password — MARS Trading Journal",
           html: resetPasswordEmail({

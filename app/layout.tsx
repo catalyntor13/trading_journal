@@ -21,7 +21,7 @@ const Jakarta = Plus_Jakarta_Sans({
 
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://trading-mars.vercel.app/"), // Placeholder domain
+  metadataBase: new URL("https://journal.tradingmars.com"), // Placeholder domain
   title: {
     default: "MARS Trading Journal | Track, Analyze, and Improve Your Trades",
     template: "%s | MARS Trading Journal",
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://trading-mars.vercel.app/",
+    url: "https://journal.tradingmars.com",
     title: "MARS Trading Journal | Track, Analyze, and Improve Your Trades",
     description: "The ultimate trading journal to track your performance, analyze trades, and improve your edge in forex, crypto, and stocks.",
     siteName: "MARS Trading Journal",
