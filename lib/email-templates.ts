@@ -241,3 +241,134 @@ export function subscriptionRenewedEmail({
     </div>
   `;
 }
+
+// ─── Email Verification ───
+export function verificationEmail({
+    name,
+    url,
+}: {
+    name: string;
+    url: string;
+}) {
+    return `
+    <div style="${baseWrapper}">
+      <div style="${cardStyle}">
+        <div style="${headerStyle}">
+          <h1 style="margin: 0; font-size: 24px; color: ${brandColor}; letter-spacing: 2px;">MARS</h1>
+          <p style="margin: 4px 0 0; font-size: 11px; color: #94a3b8; letter-spacing: 3px; text-transform: uppercase;">Trading Journal</p>
+        </div>
+
+        <div style="${contentStyle}">
+          <div style="text-align: center; margin-bottom: 28px;">
+            <div style="display: inline-block; background-color: #eff6ff; border-radius: 50px; padding: 10px 28px;">
+              <span style="font-size: 14px; font-weight: 700; color: #2563eb; letter-spacing: 1px;">📧 Verify Your Email</span>
+            </div>
+          </div>
+
+          <p style="font-size: 15px; color: ${textColor}; margin: 0 0 20px;">
+            Hi <strong>${name}</strong>,
+          </p>
+          <p style="font-size: 14px; color: ${mutedColor}; line-height: 1.7; margin: 0 0 8px;">
+            Welcome to MARS Trading Journal! To get started, please verify your email address by clicking the button below.
+          </p>
+          <p style="font-size: 13px; color: ${mutedColor}; line-height: 1.7; margin: 0 0 28px;">
+            This link will expire in <strong style="color: ${textColor};">24 hours</strong> for your security.
+          </p>
+
+          <div style="text-align: center; margin-bottom: 28px;">
+            <a href="${url}" style="display: inline-block; background-color: ${brandColor}; color: #ffffff; font-size: 14px; font-weight: 600; text-decoration: none; padding: 14px 40px; border-radius: 8px; letter-spacing: 0.5px;">
+              Verify Email Address
+            </a>
+          </div>
+
+          <div style="background-color: #f8fafc; border-radius: 8px; padding: 16px 20px; margin-bottom: 24px; border: 1px solid #e2e8f0;">
+            <p style="font-size: 12px; color: ${mutedColor}; line-height: 1.6; margin: 0;">
+              <strong style="color: ${textColor};">Button not working?</strong> Copy and paste this link into your browser:
+            </p>
+            <p style="font-size: 11px; color: ${brandColor}; word-break: break-all; margin: 8px 0 0;">
+              ${url}
+            </p>
+          </div>
+
+          <div style="background-color: #fffbeb; border-radius: 8px; padding: 14px 20px; border: 1px solid #fde68a;">
+            <p style="font-size: 12px; color: #92400e; line-height: 1.6; margin: 0;">
+              🔒 <strong>Security Notice:</strong> If you didn't create an account on MARS Trading Journal, you can safely ignore this email. No action is needed.
+            </p>
+          </div>
+        </div>
+
+        <div style="${footerStyle}">
+          <p style="margin: 0; font-size: 12px; color: #94a3b8;">
+            © ${new Date().getFullYear()} IDTORO SRL · <a href="${process.env.NEXT_PUBLIC_APP_URL}" style="color: ${brandColor}; text-decoration: none;">MARS Trading Journal</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ─── Password Reset Email ───
+export function resetPasswordEmail({
+    name,
+    url,
+}: {
+    name: string;
+    url: string;
+}) {
+    return `
+    <div style="${baseWrapper}">
+      <div style="${cardStyle}">
+        <div style="${headerStyle}">
+          <h1 style="margin: 0; font-size: 24px; color: ${brandColor}; letter-spacing: 2px;">MARS</h1>
+          <p style="margin: 4px 0 0; font-size: 11px; color: #94a3b8; letter-spacing: 3px; text-transform: uppercase;">Trading Journal</p>
+        </div>
+
+        <div style="${contentStyle}">
+          <div style="text-align: center; margin-bottom: 28px;">
+            <div style="display: inline-block; background-color: #fef2f2; border-radius: 50px; padding: 10px 28px;">
+              <span style="font-size: 14px; font-weight: 700; color: #dc2626; letter-spacing: 1px;">🔑 Password Reset</span>
+            </div>
+          </div>
+
+          <p style="font-size: 15px; color: ${textColor}; margin: 0 0 20px;">
+            Hi <strong>${name}</strong>,
+          </p>
+          <p style="font-size: 14px; color: ${mutedColor}; line-height: 1.7; margin: 0 0 8px;">
+            We received a request to reset the password for your MARS Trading Journal account. Click the button below to set a new password.
+          </p>
+          <p style="font-size: 13px; color: ${mutedColor}; line-height: 1.7; margin: 0 0 28px;">
+            This link will expire in <strong style="color: ${textColor};">1 hour</strong> for your security.
+          </p>
+
+          <div style="text-align: center; margin-bottom: 28px;">
+            <a href="${url}" style="display: inline-block; background-color: #dc2626; color: #ffffff; font-size: 14px; font-weight: 600; text-decoration: none; padding: 14px 40px; border-radius: 8px; letter-spacing: 0.5px;">
+              Reset Password
+            </a>
+          </div>
+
+          <div style="background-color: #f8fafc; border-radius: 8px; padding: 16px 20px; margin-bottom: 24px; border: 1px solid #e2e8f0;">
+            <p style="font-size: 12px; color: ${mutedColor}; line-height: 1.6; margin: 0;">
+              <strong style="color: ${textColor};">Button not working?</strong> Copy and paste this link into your browser:
+            </p>
+            <p style="font-size: 11px; color: ${brandColor}; word-break: break-all; margin: 8px 0 0;">
+              ${url}
+            </p>
+          </div>
+
+          <div style="background-color: #fef2f2; border-radius: 8px; padding: 14px 20px; border: 1px solid #fecaca;">
+            <p style="font-size: 12px; color: #991b1b; line-height: 1.6; margin: 0;">
+              🔒 <strong>Security Notice:</strong> If you didn't request a password reset, your account may be at risk. Please ignore this email and consider changing your password immediately from your dashboard.
+            </p>
+          </div>
+        </div>
+
+        <div style="${footerStyle}">
+          <p style="margin: 0; font-size: 12px; color: #94a3b8;">
+            © ${new Date().getFullYear()} IDTORO SRL · <a href="${process.env.NEXT_PUBLIC_APP_URL}" style="color: ${brandColor}; text-decoration: none;">MARS Trading Journal</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  `;
+}
+

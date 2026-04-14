@@ -50,6 +50,16 @@ export async function POST(req: Request) {
                 return new NextResponse("OK", { status: 200 });
             }
 
+            // --- IDEMPOTENCY: Skip if user is already active from a previous webhook for the same cycle ---
+            // Mollie sends two webhooks for the initial payment: one for the "first" payment itself,
+            // and another when the subscription is created. This guard prevents duplicate emails.
+            const wasAlreadyActive = dbUser.subscriptionStatus === "active";
+
+            if (wasAlreadyActive && payment.sequenceType === "first") {
+                console.log(`[Webhook] Skipping duplicate first-payment webhook for user ${userId} (already active).`);
+                return new NextResponse("OK", { status: 200 });
+            }
+
             // Calculăm data de expirare (Prelungire)
             const now = new Date();
             const baseDate = (dbUser.subscriptionEndDate && new Date(dbUser.subscriptionEndDate) > now)

@@ -1,14 +1,15 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
-import { db } from "@/db"; // Importăm instanța definită la Pasul 1
+import { db } from "@/db";
 import { Resend } from "resend";
+import { verificationEmail, resetPasswordEmail } from "@/lib/email-templates";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
-    provider: "pg", // Specificăm că folosim Postgres
+    provider: "pg",
   }),
 
 
@@ -17,50 +18,66 @@ export const auth = betterAuth({
     async sendVerificationEmail({ user, url }) {
       try {
         await resend.emails.send({
-          from: "Acme <onboarding@resend.dev>",
+          from: "MARS Trading <onboarding@resend.dev>",
           to: user.email,
-          subject: "Verify your email for MARS Trading Journal",
-          html: `
-                        <h2>Hello!</h2>
-                        <p>You requested to verify your email. Click the link below:</p>
-                        <a href="${url}" style="padding: 10px 20px; background: #000; color: #fff; text-decoration: none; border-radius: 5px;">Verify your email</a>
-                        <p>If you didn't request this, you can ignore this message.</p>
-                    `,
+          subject: "Verify your email — MARS Trading Journal",
+          html: verificationEmail({
+            name: user.name || "Trader",
+            url,
+          }),
         });
-        console.log("Email has been sent successfully!");
+        console.log("Verification email sent successfully!");
       } catch (error) {
-        console.error("Error sending email:", error);
+        console.error("Error sending verification email:", error);
       }
     },
   },
 
 
   emailAndPassword: {
-    enabled: true, // Activăm login cu email/parolă
+    enabled: true,
 
+    // Rate limit: max 6 failed password attempts, then lock for 15 minutes
+    maxPasswordLength: 128,
+    minPasswordLength: 8,
+    autoSignIn: true,
 
     async sendResetPassword(data) {
       try {
         await resend.emails.send({
-          from: "Acme <onboarding@resend.dev>",
+          from: "MARS Trading <onboarding@resend.dev>",
           to: data.user.email,
-          subject: "Reset Password for MARS Trading Journal",
-          html: `
-                        <h2>Hello!</h2>
-                        <p>You requested to reset your password. Click the link below:</p>
-                        <a href="${data.url}" style="padding: 10px 20px; background: #000; color: #fff; text-decoration: none; border-radius: 5px;">Set a new password</a>
-                        <p>If you didn't request this, you can ignore this message.</p>
-                    `,
+          subject: "Reset your password — MARS Trading Journal",
+          html: resetPasswordEmail({
+            name: data.user.name || "Trader",
+            url: data.url,
+          }),
         });
-        console.log("Email has been sent successfully!");
+        console.log("Reset password email sent successfully!");
       } catch (error) {
-        console.error("Error sending email:", error);
+        console.error("Error sending reset password email:", error);
       }
     },
 
   },
 
-
+  // Rate limiting for security — prevents brute force attacks
+  rateLimit: {
+    window: 15 * 60, // 15 minutes window (in seconds)
+    max: 6,          // Maximum 6 attempts per window
+    customRules: {
+      // Strict limit on sign-in attempts (brute force protection)
+      "/api/auth/sign-in/email": {
+        window: 15 * 60,
+        max: 6,
+      },
+      // Strict limit on password reset requests (abuse prevention)
+      "/api/auth/forget-password": {
+        window: 15 * 60,
+        max: 3,
+      },
+    },
+  },
 
   user: {
     deleteUser: {
