@@ -311,7 +311,7 @@ const styles = StyleSheet.create({
 
 // ─── Invoice Document Component ───
 export const InvoiceDocument = ({ data }: { data: InvoiceData }) => {
-    const invoiceNumber = `MARS Journal-${data.invoiceId.slice(-8).toUpperCase()}`;
+    const invoiceNumber = data.invoiceId; // e.g. "MARS-1", "MARS-2"...
     const amountNum = parseFloat(data.amount);
     const totalAmount = amountNum;
 

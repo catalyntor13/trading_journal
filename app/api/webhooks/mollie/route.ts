@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
 import { mollieClient } from "@/lib/mollie";
 import { db } from "@/db/index";
-import { user as userTable } from "@/db/schema";
+import { user as userTable, Invoices } from "@/db/schema";
 import { generateInvoicePDF } from "@/lib/invoice-generator";
 import { paymentConfirmationEmail, subscriptionRenewedEmail } from "@/lib/email-templates";
 import { Resend } from "resend";
-import { eq } from "drizzle-orm";
+import { eq, sql, desc } from "drizzle-orm";
+import crypto from "crypto";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -121,15 +122,52 @@ export async function POST(req: Request) {
                 }
             }
 
-            // C. Generare Factură și Trimitere Email
+            // C. Salvare factură în DB și generare PDF
+            // Idempotency: verificăm dacă factura există deja pentru acest paymentId
+            const existingInvoice = await db.query.Invoices.findFirst({
+                where: eq(Invoices.molliePaymentId, paymentId),
+            });
+
+            let invoiceDisplayNumber: string;
+
+            if (existingInvoice) {
+                // Invoice already saved — reuse the existing number
+                invoiceDisplayNumber = `${existingInvoice.series}-${existingInvoice.invoiceNumber}`;
+                console.log(`[Webhook] Invoice already exists: ${invoiceDisplayNumber}`);
+            } else {
+                // Get next invoice number (MAX + 1)
+                const [maxResult] = await db
+                    .select({ maxNum: sql<number>`COALESCE(MAX(${Invoices.invoiceNumber}), 0)` })
+                    .from(Invoices);
+                const nextNumber = (maxResult?.maxNum ?? 0) + 1;
+
+                // Insert new invoice record
+                await db.insert(Invoices).values({
+                    id: crypto.randomUUID(),
+                    userId: userId,
+                    molliePaymentId: paymentId,
+                    invoiceNumber: nextNumber,
+                    series: "MARS",
+                    amount: payment.amount.value,
+                    currency: payment.amount.currency,
+                    status: "paid",
+                    description: "MARS Trading PRO Plan",
+                    customerName: dbUser.name || "Trader",
+                    customerEmail: dbUser.email,
+                });
+
+                invoiceDisplayNumber = `MARS-${nextNumber}`;
+                console.log(`[Webhook] Invoice saved: ${invoiceDisplayNumber}`);
+            }
+
             const pdfBuffer = await generateInvoicePDF({
                 name: dbUser.name || "Trader",
                 email: dbUser.email,
                 amount: payment.amount.value,
                 date: new Date().toLocaleDateString('ro-RO'),
-                invoiceId: payment.id,
+                invoiceId: invoiceDisplayNumber,
                 plan: "Monthly",
-                country: payment.countryCode || "Romania" // Mollie usually has countryCode on payment, else default or user meta
+                country: payment.countryCode || "Romania"
             });
 
             const formattedEndDate = newEndDate.toLocaleDateString('en-US', {
@@ -160,7 +198,7 @@ export async function POST(req: Request) {
                 from: "MARS Trading <noreply@tradingmars.com>",
                 to: dbUser.email,
                 subject: emailSubject,
-                attachments: [{ filename: `invoice_${payment.id}.pdf`, content: pdfBuffer }],
+                attachments: [{ filename: `invoice_${invoiceDisplayNumber}.pdf`, content: pdfBuffer }],
                 html: emailHtml,
             });
         }

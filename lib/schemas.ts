@@ -36,3 +36,4 @@ export const tradeSchema = z.object({
 })
 
 export type TradeFormValues = z.infer<typeof tradeSchema>
+

@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { pgTable, text, timestamp, boolean, index, pgEnum, varchar } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, boolean, index, pgEnum, varchar, serial, integer, numeric } from "drizzle-orm/pg-core";
 
 export const planEnum = pgEnum("plan", ["free", "pro", "lifetime"]);
 
@@ -84,6 +84,7 @@ export const verification = pgTable(
 export const userRelations = relations(user, ({ many }) => ({
   sessions: many(session),
   accounts: many(account),
+  invoices: many(Invoices),
 }));
 
 export const sessionRelations = relations(session, ({ one }) => ({
@@ -169,3 +170,25 @@ export const strategiesRelations = relations(strategies, ({ one }) => ({
   }),
 }));
 
+export const Invoices = pgTable("invoices", {
+  id: text("id").primaryKey(),
+  userId: text("user_id")
+    .references(() => user.id, { onDelete: "set null" }),
+  molliePaymentId: text("mollie_payment_id").unique().notNull(),
+  invoiceNumber: integer("invoice_number").notNull(), // Auto-increment: 1, 2, 3...
+  series: text("series").default("MARS").notNull(),   // Series prefix → MARS-1, MARS-2...
+  amount: numeric("amount").notNull(),
+  currency: text("currency").default("USD").notNull(),
+  status: text("status").default("paid").notNull(),   // paid, refunded
+  description: text("description"),                    // e.g. "MARS Trading PRO Plan"
+  customerName: text("customer_name"),
+  customerEmail: text("customer_email"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const invoicesRelations = relations(Invoices, ({ one }) => ({
+  user: one(user, {
+    fields: [Invoices.userId],
+    references: [user.id],
+  }),
+}));

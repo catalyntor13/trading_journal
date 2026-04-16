@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
+import Logo from "@/components/myComponents/Logo";
 
 const features = [
     { icon: "📊", title: "Unlimited Trades", description: "Log every single trade without any restrictions" },
@@ -59,8 +60,7 @@ export default function SubscribePage() {
             {/* Top navigation bar */}
             <nav className="relative z-10 flex items-center justify-between px-6 md:px-12 py-5 border-b border-slate-800/50">
                 <button onClick={() => router.push("/")} className="flex items-center gap-2 text-white hover:opacity-80 transition-opacity">
-                    <span className="text-2xl">🔴</span>
-                    <span className="text-lg font-bold tracking-tight">MARS</span>
+                    <Logo />
                 </button>
                 <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-full bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center text-white text-xs font-bold">

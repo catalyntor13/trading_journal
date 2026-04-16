@@ -38,17 +38,17 @@ const footerStyle = `
 
 // ─── Payment Confirmation Email ───
 export function paymentConfirmationEmail({
-    name,
-    amount,
-    plan,
-    endDate,
+  name,
+  amount,
+  plan,
+  endDate,
 }: {
-    name: string;
-    amount: string;
-    plan: string;
-    endDate: string;
+  name: string;
+  amount: string;
+  plan: string;
+  endDate: string;
 }) {
-    return `
+  return `
     <div style="${baseWrapper}">
       <div style="${cardStyle}">
         <div style="${headerStyle}">
@@ -110,13 +110,13 @@ export function paymentConfirmationEmail({
 
 // ─── Subscription Cancelled Email ───
 export function subscriptionCancelledEmail({
-    name,
-    endDate,
+  name,
+  endDate,
 }: {
-    name: string;
-    endDate: string;
+  name: string;
+  endDate: string;
 }) {
-    return `
+  return `
     <div style="${baseWrapper}">
       <div style="${cardStyle}">
         <div style="${headerStyle}">
@@ -174,15 +174,15 @@ export function subscriptionCancelledEmail({
 
 // ─── Subscription Renewed Email ───
 export function subscriptionRenewedEmail({
-    name,
-    amount,
-    endDate,
+  name,
+  amount,
+  endDate,
 }: {
-    name: string;
-    amount: string;
-    endDate: string;
+  name: string;
+  amount: string;
+  endDate: string;
 }) {
-    return `
+  return `
     <div style="${baseWrapper}">
       <div style="${cardStyle}">
         <div style="${headerStyle}">
@@ -244,13 +244,13 @@ export function subscriptionRenewedEmail({
 
 // ─── Email Verification ───
 export function verificationEmail({
-    name,
-    url,
+  name,
+  url,
 }: {
-    name: string;
-    url: string;
+  name: string;
+  url: string;
 }) {
-    return `
+  return `
     <div style="${baseWrapper}">
       <div style="${cardStyle}">
         <div style="${headerStyle}">
@@ -309,13 +309,13 @@ export function verificationEmail({
 
 // ─── Password Reset Email ───
 export function resetPasswordEmail({
-    name,
-    url,
+  name,
+  url,
 }: {
-    name: string;
-    url: string;
+  name: string;
+  url: string;
 }) {
-    return `
+  return `
     <div style="${baseWrapper}">
       <div style="${cardStyle}">
         <div style="${headerStyle}">
