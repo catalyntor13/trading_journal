@@ -5,7 +5,7 @@ import { user as userTable, Invoices } from "@/db/schema";
 import { generateInvoicePDF } from "@/lib/invoice-generator";
 import { paymentConfirmationEmail, subscriptionRenewedEmail } from "@/lib/email-templates";
 import { Resend } from "resend";
-import { eq, sql, desc } from "drizzle-orm";
+import { eq, sql, } from "drizzle-orm";
 import crypto from "crypto";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -16,6 +16,17 @@ export async function POST(req: Request) {
         const paymentId = formData.get("id") as string;
 
         if (!paymentId) return new NextResponse("Missing ID", { status: 400 });
+
+        // IDEMPOTENCY CHECK: Check if this payment has already been processed FIRST
+        // This prevents duplicate emails and invoices from concurrent webhook calls
+        const existingInvoice = await db.query.Invoices.findFirst({
+            where: eq(Invoices.molliePaymentId, paymentId),
+        });
+
+        if (existingInvoice) {
+            console.log(`[Webhook] Payment ${paymentId} already processed. Invoice exists: ${existingInvoice.series}-${existingInvoice.invoiceNumber}`);
+            return new NextResponse("OK", { status: 200 });
+        }
 
         // 1. Luăm plata și logăm statusul pentru debug
         const payment: any = await mollieClient.payments.get(paymentId);
@@ -48,16 +59,6 @@ export async function POST(req: Request) {
 
             if (!dbUser) {
                 console.error(`[Webhook] Userul ${userId} nu a fost găsit în DB`);
-                return new NextResponse("OK", { status: 200 });
-            }
-
-            // --- IDEMPOTENCY: Skip if user is already active from a previous webhook for the same cycle ---
-            // Mollie sends two webhooks for the initial payment: one for the "first" payment itself,
-            // and another when the subscription is created. This guard prevents duplicate emails.
-            const wasAlreadyActive = dbUser.subscriptionStatus === "active";
-
-            if (wasAlreadyActive && payment.sequenceType === "first") {
-                console.log(`[Webhook] Skipping duplicate first-payment webhook for user ${userId} (already active).`);
                 return new NextResponse("OK", { status: 200 });
             }
 
@@ -123,42 +124,30 @@ export async function POST(req: Request) {
             }
 
             // C. Salvare factură în DB și generare PDF
-            // Idempotency: verificăm dacă factura există deja pentru acest paymentId
-            const existingInvoice = await db.query.Invoices.findFirst({
-                where: eq(Invoices.molliePaymentId, paymentId),
+            // We already verified the invoice doesn't exist above, so we can safely insert
+            // Get next invoice number (MAX + 1)
+            const [maxResult] = await db
+                .select({ maxNum: sql<number>`COALESCE(MAX(${Invoices.invoiceNumber}), 0)` })
+                .from(Invoices);
+            const nextNumber = (maxResult?.maxNum ?? 0) + 1;
+
+            // Insert new invoice record
+            const insertResult = await db.insert(Invoices).values({
+                id: crypto.randomUUID(),
+                userId: userId,
+                molliePaymentId: paymentId,
+                invoiceNumber: nextNumber,
+                series: "MARS",
+                amount: payment.amount.value,
+                currency: payment.amount.currency,
+                status: "paid",
+                description: "MARS Trading PRO Plan",
+                customerName: dbUser.name || "Trader",
+                customerEmail: dbUser.email,
             });
 
-            let invoiceDisplayNumber: string;
-
-            if (existingInvoice) {
-                // Invoice already saved — reuse the existing number
-                invoiceDisplayNumber = `${existingInvoice.series}-${existingInvoice.invoiceNumber}`;
-                console.log(`[Webhook] Invoice already exists: ${invoiceDisplayNumber}`);
-            } else {
-                // Get next invoice number (MAX + 1)
-                const [maxResult] = await db
-                    .select({ maxNum: sql<number>`COALESCE(MAX(${Invoices.invoiceNumber}), 0)` })
-                    .from(Invoices);
-                const nextNumber = (maxResult?.maxNum ?? 0) + 1;
-
-                // Insert new invoice record
-                await db.insert(Invoices).values({
-                    id: crypto.randomUUID(),
-                    userId: userId,
-                    molliePaymentId: paymentId,
-                    invoiceNumber: nextNumber,
-                    series: "MARS",
-                    amount: payment.amount.value,
-                    currency: payment.amount.currency,
-                    status: "paid",
-                    description: "MARS Trading PRO Plan",
-                    customerName: dbUser.name || "Trader",
-                    customerEmail: dbUser.email,
-                });
-
-                invoiceDisplayNumber = `MARS-${nextNumber}`;
-                console.log(`[Webhook] Invoice saved: ${invoiceDisplayNumber}`);
-            }
+            const invoiceDisplayNumber = `MARS-${nextNumber}`;
+            console.log(`[Webhook] Invoice saved: ${invoiceDisplayNumber}`, insertResult);
 
             const pdfBuffer = await generateInvoicePDF({
                 name: dbUser.name || "Trader",
@@ -166,7 +155,7 @@ export async function POST(req: Request) {
                 amount: payment.amount.value,
                 date: new Date().toLocaleDateString('ro-RO'),
                 invoiceId: invoiceDisplayNumber,
-                plan: "Monthly",
+                plan: "PRO",
                 country: payment.countryCode || "Romania"
             });
 
@@ -194,6 +183,7 @@ export async function POST(req: Request) {
                 ? "Welcome Back! Your MARS Pro Subscription is Active"
                 : "Payment Confirmation — MARS Trading Journal";
 
+            // Send email to customer
             await resend.emails.send({
                 from: "MARS Trading <noreply@tradingmars.com>",
                 to: dbUser.email,
@@ -201,6 +191,26 @@ export async function POST(req: Request) {
                 attachments: [{ filename: `invoice_${invoiceDisplayNumber}.pdf`, content: pdfBuffer }],
                 html: emailHtml,
             });
+            console.log(`[Webhook] Email sent to customer ${dbUser.email}`);
+
+            // Send invoice copy to admin
+            const adminEmail = process.env.ADMIN_EMAIL;
+            if (adminEmail && adminEmail.trim() && adminEmail !== dbUser.email) {
+                try {
+                    await resend.emails.send({
+                        from: "MARS Trading <noreply@tradingmars.com>",
+                        to: adminEmail,
+                        subject: `[Invoice Copy] ${invoiceDisplayNumber} - ${dbUser.name} (${dbUser.email})`,
+                        attachments: [{ filename: `invoice_${invoiceDisplayNumber}.pdf`, content: pdfBuffer }],
+                        html: `<p>New invoice generated:</p><p><strong>${invoiceDisplayNumber}</strong></p><p>Customer: ${dbUser.name}</p><p>Email: ${dbUser.email}</p><p>Amount: ${payment.amount.value} ${payment.amount.currency}</p>`,
+                    });
+                    console.log(`[Webhook] Admin invoice copy sent to ${adminEmail}`);
+                } catch (emailError: any) {
+                    console.error(`[Webhook] Failed to send admin invoice email:`, emailError?.message || emailError);
+                }
+            } else {
+                console.log(`[Webhook] Admin email not configured or is same as customer email. Skipping admin copy.`);
+            }
         }
 
         // 3. Dacă plata a eșuat/fost anulată
@@ -218,6 +228,8 @@ export async function POST(req: Request) {
 
     } catch (error: any) {
         console.error("[Webhook Error]:", error?.message || error);
+        console.error("[Webhook Error Stack]:", error?.stack);
+        console.error("[Webhook Error Cause]:", error?.cause);
         return new NextResponse("Internal Error", { status: 500 });
     }
 }
