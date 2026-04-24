@@ -1,7 +1,7 @@
 "use client"
 
 import { format } from "date-fns"
-import { MoreHorizontal, Pencil, Trash2, Eye, ArrowUpRight, ArrowDownRight } from "lucide-react"
+import { MoreHorizontal, Pencil, Trash2, Eye, ArrowUpRight, ArrowDownRight, ArrowUpDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
@@ -34,22 +34,32 @@ import { deleteTrade } from "@/app/actions/accounts"
 export function TradesTable({
     trades,
     accountId,
+    accountBalance,
     totalPages = 1,
     currentPage = 1
 }: {
     trades: any[],
     accountId: string,
+    accountBalance: number,
     totalPages?: number,
     currentPage?: number
 }) {
     const [viewTrade, setViewTrade] = useState<any>(null)
     const [editTrade, setEditTrade] = useState<any>(null)
     const [selectedImage, setSelectedImage] = useState<string | null>(null)
-    const router = useRouter() // For pagination navigation
+    const [sortAscending, setSortAscending] = useState(false) // false = newest first, true = oldest first
+    const router = useRouter()
 
     const handlePageChange = (page: number) => {
         router.push(`/accounts/${accountId}?page=${page}`)
     }
+
+    // Sort trades based on date
+    const sortedTrades = [...trades].sort((a, b) => {
+        const dateA = new Date(a.date || a.createdAt).getTime()
+        const dateB = new Date(b.date || b.createdAt).getTime()
+        return sortAscending ? dateA - dateB : dateB - dateA
+    })
 
     return (
         <div className="bg-card rounded-2xl border border-border overflow-hidden shadow-sm">
@@ -57,17 +67,8 @@ export function TradesTable({
             {editTrade && (
                 <AddTradeForm
                     accountId={accountId}
-                    strategies={[]} // Ideally we pass strategies here too, but for now we might need to fetch them or pass them down. 
-                    // Update: We didn't pass strategies to TradesTable in page.tsx. We should fix that or fetch them.
-                    // For quick fix, let's assume we can pass strategies or fetch them. 
-                    // Actually, simpler to just close it for now or pass empty which might break select.
-                    // Let's rely on parent to pass strategies or valid data.
-                    // Wait, AddTradeForm needs strategies.
-                    // I should update page.tsx to pass strategies to TradesTable.
-                    accountBalance={0} // We need balance for RR calc on edit? Yes but strictly for NEW entries. 
-                    // Edit might re-calc based on current balance? 
-                    // Let's pass 0 or maybe we don't need to re-calc RR if not changed?
-                    // The form recalculates on submit.
+                    strategies={[]}
+                    accountBalance={accountBalance}
                     initialData={editTrade}
                     open={!!editTrade}
                     onOpenChange={(open) => !open && setEditTrade(null)}
@@ -216,7 +217,7 @@ export function TradesTable({
                     <>
                         {/* --- MOBILE VIEW (CARDS) --- */}
                         <div className="block md:hidden flex flex-col divide-y divide-border">
-                            {trades.map((trade) => {
+                            {sortedTrades.map((trade) => {
                                 const profit = parseFloat(trade.profit) || 0
                                 const commission = parseFloat(trade.commission) || 0
                                 const netProfit = profit - commission
@@ -277,7 +278,20 @@ export function TradesTable({
                             <Table>
                                 <TableHeader className="bg-muted/30">
                                     <TableRow className="border-border hover:bg-transparent">
-                                        <TableHead className="text-muted-foreground font-semibold h-12">Date</TableHead>
+                                        <TableHead className="text-muted-foreground font-semibold h-12">
+                                            <div className="flex items-center gap-2">
+                                                Date
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    onClick={() => setSortAscending(!sortAscending)}
+                                                    className="h-6 w-6 p-0 hover:bg-muted"
+                                                    title={sortAscending ? "Oldest first" : "Newest first"}
+                                                >
+                                                    <ArrowUpDown className="w-4 h-4 text-muted-foreground" />
+                                                </Button>
+                                            </div>
+                                        </TableHead>
                                         <TableHead className="text-muted-foreground font-semibold h-12">Pair</TableHead>
                                         <TableHead className="text-muted-foreground font-semibold h-12">Strategy</TableHead>
                                         <TableHead className="text-muted-foreground font-semibold h-12">Dir</TableHead>
@@ -290,7 +304,7 @@ export function TradesTable({
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {trades.map((trade) => {
+                                    {sortedTrades.map((trade) => {
                                         const profit = parseFloat(trade.profit) || 0
                                         const commission = parseFloat(trade.commission) || 0
                                         const netProfit = profit - commission

@@ -70,6 +70,7 @@ export default async function AccountDetailsPage({
             <TradesTable
                 trades={trades}
                 accountId={id}
+                accountBalance={Number(account.balance)}
                 totalPages={Math.ceil(totalCount / 6)}
                 currentPage={page}
             />

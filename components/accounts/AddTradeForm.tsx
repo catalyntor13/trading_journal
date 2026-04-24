@@ -4,8 +4,8 @@ import { addTrade, updateTrade } from "@/app/actions/accounts"
 import { tradeSchema, type TradeFormValues } from "@/lib/schemas"
 import { cn } from "@/lib/utils"
 import { format } from "date-fns"
-
-import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { useState, useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Button } from "@/components/ui/button"
@@ -47,15 +47,26 @@ const formatNumberStr = (val: string) => {
 
 // Helper function for RR calculation
 const calculateRR = (profitStr: string, riskPercentStr: string, balance: number) => {
-    const profit = parseFloat(profitStr)
-    const riskPercent = parseFloat(riskPercentStr)
-    if (isNaN(profit) || isNaN(riskPercent) || riskPercent === 0 || balance === 0) return ""
+    const profit = parseFloat(profitStr || "0")
+    const riskPercent = parseFloat(riskPercentStr || "0")
+    
+    // Add validation for NaN values
+    if (isNaN(profit) || isNaN(riskPercent) || riskPercent === 0 || balance === 0) {
+        return ""
+    }
 
-    const riskAmount = balance * (riskPercent / 100) // 10000 * 0.01 = 100
+    const riskAmount = balance * (riskPercent / 100)
+    
+    // Prevent division by zero
+    if (riskAmount === 0) return ""
+    
     const rr = profit / riskAmount
 
+    // Check if result is valid number
+    if (isNaN(rr)) return ""
+    
     if (profit > 0) return `${rr.toFixed(2)}R`
-    if (profit < 0) return `${rr.toFixed(2)}R` // negative
+    if (profit < 0) return `${rr.toFixed(2)}R`
     return "BE"
 }
 
@@ -76,6 +87,7 @@ export function AddTradeForm({
     open: controlledOpen,
     onOpenChange
 }: AddTradeFormProps) {
+    const router = useRouter()
     const [internalOpen, setInternalOpen] = useState(false)
     const open = controlledOpen !== undefined ? controlledOpen : internalOpen
     const setOpen = onOpenChange || setInternalOpen
@@ -88,6 +100,9 @@ export function AddTradeForm({
         defaultValues: initialData ? {
             ...initialData,
             date: initialData.date ? new Date(initialData.date) : new Date(),
+            profit: initialData.profit?.toString() || "",  // Ensure string
+            commission: initialData.commission?.toString() || "",  // Ensure string
+           riskPercent: initialData.riskPercent?.toString() || "1",  // Ensure string
         } : {
             accountId: accountId,
             date: new Date(),
@@ -106,39 +121,61 @@ export function AddTradeForm({
         },
     })
 
+     // Watch profit and riskPercent to auto-calculate RR
+    const profit = form.watch("profit")
+    const riskPercent = form.watch("riskPercent")
+
+    useEffect(() => {
+        if (accountBalance > 0) {
+            const rr = calculateRR(profit || "0", riskPercent || "0", accountBalance)
+            form.setValue("riskRatio", rr)
+        }
+    }, [profit, riskPercent, accountBalance, form])
+
     async function onSubmit(data: TradeFormValues) {
         setIsLoading(true)
 
-        // Calculate RR
-        const rr = calculateRR(data.profit || "0", data.riskPercent || "0", accountBalance)
-        data.riskRatio = rr
+        try {
+            // Calculate RR before submission
+            const rr = calculateRR(data.profit || "0", data.riskPercent || "0", accountBalance)
+            data.riskRatio = rr
 
-        let result
-        if (initialData?.id) {
-            result = await updateTrade(initialData.id, accountId, data)
-        } else {
-            result = await addTrade(data)
-        }
-
-        setIsLoading(false)
-
-        if (result?.error) {
-            alert(result.error)
-        } else {
-            setOpen(false)
-            if (!initialData) {
-                form.reset({
-                    ...form.getValues(),
-                    date: new Date(),
-                    pair: "",
-                    profit: "",
-                    commission: "",
-                    comments: "",
-                    image1: "",
-                    image2: "",
-                    fearIndex: "5",
-                })
+            let result
+            if (initialData?.id) {
+                result = await updateTrade(initialData.id, accountId, data)
+            } else {
+                result = await addTrade(data)
             }
+
+            if (result?.error) {
+                alert(result.error)
+            } else {
+                setOpen(false)
+                // Refresh page data after successful submission
+                router.refresh()
+                
+                // Reset form only for new trades
+                if (!initialData) {
+                    form.reset({
+                        accountId: accountId,
+                        date: new Date(),
+                        pair: "",
+                        strategy: "",
+                        direction: "Buy",
+                        profit: "",
+                        commission: "",
+                        riskPercent: "1",
+                        tod: "",
+                        riskRatio: "",
+                        comments: "",
+                        image1: "",
+                        image2: "",
+                        fearIndex: "5",
+                    })
+                }
+            }
+        } finally {
+            setIsLoading(false)
         }
     }
 
