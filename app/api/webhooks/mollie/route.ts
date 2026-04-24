@@ -194,6 +194,7 @@ async function processPayment(
 
         const isRenewal = dbUser.subscriptionStatus === "canceled";
         const isFirstPayment = payment.sequenceType === "first";
+        
 
         console.log(`[Webhook] Processing payment: isRenewal=${isRenewal}, isFirstPayment=${isFirstPayment}, sequenceType=${payment.sequenceType}`);
 

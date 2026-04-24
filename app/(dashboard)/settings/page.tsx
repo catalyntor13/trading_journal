@@ -241,13 +241,23 @@ export default function SettingsPage() {
                                 <div className="space-y-1.5">
                                     <div className="flex items-center gap-3">
                                         <span className="text-foreground font-semibold">Pro Plan</span>
-                                        {session?.user?.subscriptionStatus === "canceled" ? (
+                                          
+                                          {session?.user?.plan === "lifetime" ? (
+                                            <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 text-xs font-semibold border border-emerald-500/20">Lifetime</span>
+                                        ) : session?.user?.subscriptionStatus === "canceled" ? (
                                             <span className="px-2.5 py-0.5 rounded-full bg-red-500/10 text-red-500 text-xs font-semibold border border-red-500/20">Canceled</span>
                                         ) : (
                                             <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 text-xs font-semibold border border-emerald-500/20">Active</span>
                                         )}
+       
+                                        
                                     </div>
-                                    {session?.user?.subscriptionStatus === "canceled" ? (
+
+                                     {session?.user?.plan === "lifetime" ? (
+                                        <p className="text-muted-foreground text-sm leading-relaxed">
+                                            You have lifetime access to all Pro features. Thank you for your support!
+                                        </p>
+                                    ) : session?.user?.subscriptionStatus === "canceled" ? (
                                         <p className="text-muted-foreground text-sm leading-relaxed">
                                             Your subscription will end on <span className="font-medium text-foreground">{expireDate?.toLocaleDateString()}</span>.
                                         </p>
@@ -256,16 +266,20 @@ export default function SettingsPage() {
                                             Renews automatically on <span className="font-medium text-foreground">{expireDate?.toLocaleDateString()}</span>
                                         </p>
                                     )}
+                                    
+
+
+                                
                                 </div>
                                 <div className="shrink-0 w-full sm:w-auto">
-                                    {session?.user?.subscriptionStatus === "canceled" ? (
+                                    { session?.user?.plan === 'lifetime' ? null : session?.user?.subscriptionStatus === "canceled" ? (
                                         <Button onClick={handleRenewPlan}>Renew</Button>
                                     ) : (
                                         <Dialog open={isOpen} onOpenChange={setIsOpen}>
                                             <DialogTrigger asChild>
                                                 <Button variant="outline" className="w-full sm:w-auto border-red-200 hover:bg-red-50 hover:border-red-300 text-red-600 transition-colors shadow-sm dark:border-red-900/50 dark:hover:bg-red-900/20 dark:text-red-500">
                                                     Cancel Plan
-                                                </Button>
+                                                </Button>  
                                             </DialogTrigger>
                                             <DialogContent className="sm:max-w-[425px] bg-popover border-border text-popover-foreground">
                                                 <DialogHeader>
